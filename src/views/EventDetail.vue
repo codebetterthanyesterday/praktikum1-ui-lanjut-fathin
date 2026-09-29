@@ -7,7 +7,9 @@ const { t } = useLanguage()
 
 <template>
   <div class="event-detail-page">
-    <button @click="$router.push('/browse/events')" class="btn-back">&larr; {{ t('eventDetail.back') }}</button>
+    <button @click="$router.push('/browse/events')" class="btn-back">
+      &larr; {{ t('eventDetail.back') }}
+    </button>
 
     <div class="detail-header">
       <div class="header-content">

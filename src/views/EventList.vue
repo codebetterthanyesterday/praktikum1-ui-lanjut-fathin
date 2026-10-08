@@ -1,8 +1,9 @@
 <script setup>
 import { MapPin } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
+import { events } from '@/data/events'
 
-const { t } = useLanguage()
+const { locale, t, formatDate } = useLanguage()
 </script>
 
 <template>
@@ -12,73 +13,79 @@ const { t } = useLanguage()
       <p class="section-desc">{{ t('events.desc') }}</p>
     </div>
 
+    <!-- LAYOUT SYSTEM: ADAPTIVE GRID -->
     <div class="event-grid">
-      <div class="event-card" v-for="i in 6" :key="i">
+      <!-- VISUAL HIERARCHY: GROUPING & COMMON REGIONS -->
+      <article class="event-card" v-for="event in events" :key="event.id">
         <div class="event-body">
           <div class="event-meta">
-            <span class="event-date">Oct {{ 10 + i }}, 2026</span>
-            <span class="event-category">{{ t('events.category') }}</span>
+            <!-- LABEL CONTRAST: Recognition over Recall -->
+            <span class="event-date">{{ formatDate(event.date) }}</span>
+            <span class="event-category">{{ t(`events.categories.${event.cat}`) }}</span>
           </div>
-          <h3>{{ t('events.gathering') }} {{ i }}</h3>
-          <p class="event-loc">
-            <MapPin :size="16" class="inline-icon" /> {{ t('events.location') }}
-          </p>
+
+          <h3 class="event-title">{{ event.title }}</h3>
+          <p class="event-loc"><MapPin :size="16" class="inline-icon" /> {{ event.loc }}</p>
           <p class="event-desc">
-            {{ t('events.eventDesc') }}
+            {{ event.desc[locale] }}
           </p>
+
           <div class="card-footer">
-            <router-link :to="`/browse/events/${i}`" class="btn-link"
-              >{{ t('events.viewDetails') }} &rarr;</router-link
-            >
+            <router-link :to="`/browse/events/${event.id}`" class="btn-link">
+              {{ t('events.viewDetails') }} &rarr;
+            </router-link>
           </div>
         </div>
-      </div>
+      </article>
     </div>
   </div>
 </template>
 
 <style scoped>
 .header-section {
-  margin-bottom: 3rem;
+  margin-bottom: var(--space-8);
 }
 
 .section-title {
   font-size: 2.2rem;
-  color: #1c1948;
-  margin-bottom: 0.5rem;
+  color: var(--text-main);
+  margin-bottom: var(--space-2);
 }
 
 .section-desc {
-  color: #666;
+  color: var(--text-muted);
   font-size: 1.1rem;
 }
 
+/* ADAPTIVE GRID: otomatis menjadi 3, 2, atau 1 kolom mengikuti lebar layar tanpa media query.
+   min(320px, 100%) mencegah kartu meluber di layar yang lebih sempit dari 320px. */
 .event-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: var(--space-6);
 }
 
+/* COMMON REGIONS: border menyatukan isi kartu dan memisahkannya dari kartu lain */
 .event-card {
   background: white;
-  border-radius: 16px;
+  border-radius: var(--space-4);
+  border: 1px solid var(--border-color);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-  border: 1px solid #f0f0f0;
-  transition:
-    transform 0.3s ease,
-    border-color 0.3s ease;
   display: flex;
   flex-direction: column;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .event-card:hover {
-  transform: translateY(-5px);
-  border-color: #ddd;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
 }
 
+/* PROXIMITY: jarak antar elemen di dalam kartu lebih rapat daripada jarak antar kartu */
 .event-body {
-  padding: 2rem;
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -88,67 +95,68 @@ const { t } = useLanguage()
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-4);
 }
 
 .event-date {
-  background: rgba(102, 68, 255, 0.1);
-  color: #6644ff;
-  padding: 0.4rem 0.8rem;
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: var(--space-1) var(--space-2);
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.85rem;
 }
 
 .event-category {
-  color: #888;
+  color: var(--text-muted);
   font-size: 0.85rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.event-body h3 {
-  color: #1c1948;
-  margin-bottom: 0.8rem;
+.event-title {
+  color: var(--text-main);
+  margin-bottom: var(--space-2);
   font-size: 1.4rem;
 }
 
 .event-loc {
-  color: #666;
+  color: var(--text-muted);
   font-size: 0.95rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-4);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-1);
 }
 
 .inline-icon {
-  color: #6644ff;
+  color: var(--primary);
+  flex-shrink: 0;
 }
 
 .event-desc {
-  color: #555;
+  color: var(--text-muted);
   line-height: 1.6;
   font-size: 0.95rem;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-6);
   flex-grow: 1;
 }
 
 .card-footer {
-  border-top: 1px solid #f0f0f0;
-  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-4);
 }
 
 .btn-link {
   display: inline-block;
-  color: #1c1948;
+  color: var(--text-main);
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .btn-link:hover {
-  color: #6644ff;
+  color: var(--primary);
 }
 </style>

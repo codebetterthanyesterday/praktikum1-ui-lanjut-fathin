@@ -1,42 +1,47 @@
 <script setup>
 import { computed } from 'vue'
-import { Target, Globe, Handshake } from 'lucide-vue-next'
+import { Search, Ticket, ChartColumn } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 
 const { t } = useLanguage()
 
 const features = computed(() => [
-  { icon: Target, title: t('home.curatedTitle'), desc: t('home.curatedDesc') },
-  { icon: Globe, title: t('home.globalTitle'), desc: t('home.globalDesc') },
-  { icon: Handshake, title: t('home.communityTitle'), desc: t('home.communityDesc') },
+  { icon: Search, title: t('home.discoverTitle'), desc: t('home.discoverDesc') },
+  { icon: Ticket, title: t('home.ticketingTitle'), desc: t('home.ticketingDesc') },
+  { icon: ChartColumn, title: t('home.hostTitle'), desc: t('home.hostDesc') },
 ])
 </script>
 
 <template>
   <div class="home-page">
-    <section class="hero">
+    <section class="hero-section">
       <div class="hero-content">
-        <span class="badge">{{ t('home.badge') }}</span>
         <h1 class="hero-title">{{ t('home.title') }}</h1>
         <p class="hero-subtitle">
           {{ t('home.subtitle') }}
         </p>
-        <div class="hero-actions">
-          <router-link to="/browse/events" class="btn btn-primary">{{ t('home.discoverBtn') }}</router-link>
-          <router-link to="/about" class="btn btn-secondary">{{ t('home.learnMoreBtn') }}</router-link>
+        <div class="hero-action">
+          <router-link to="/browse/events" class="btn-primary">
+            {{ t('home.discoverBtn') }}
+          </router-link>
         </div>
       </div>
     </section>
 
-    <section class="features">
-      <div class="feature-card" v-for="(feature, index) in features" :key="index">
-        <div class="feature-icon">
-          <component :is="feature.icon" :size="40" :stroke-width="1.5" color="#6644ff" />
+    <section class="features-section">
+      <div class="features-header">
+        <h2>{{ t('home.featuresTitle') }}</h2>
+        <p>{{ t('home.featuresDesc') }}</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card" v-for="feature in features" :key="feature.title">
+          <div class="feature-icon">
+            <component :is="feature.icon" :size="48" :stroke-width="1.5" />
+          </div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.desc }}</p>
         </div>
-        <h3>{{ feature.title }}</h3>
-        <p>
-          {{ feature.desc }}
-        </p>
       </div>
     </section>
 
@@ -63,6 +68,7 @@ const features = computed(() => [
               </ul>
             </li>
             <li><router-link to="/contact">Contact</router-link></li>
+            <li><router-link to="/dashboard">Organizer Dashboard</router-link></li>
           </ul>
         </li>
       </ul>
@@ -72,142 +78,142 @@ const features = computed(() => [
 
 <style scoped>
 .home-page {
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
   animation: fadeIn 0.5s ease;
 }
 
-.hero {
+.hero-section {
+  /* THE FOLD: tinggi hero dijaga agar CTA utama selalu berada di area Above the Fold */
+  min-height: 65vh;
   display: flex;
+  align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 5rem 2rem;
-  background: #fdfdfd;
-  border-radius: 24px;
-  border: 1px solid #f0f0f0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  background: var(--bg-light);
+  border-radius: var(--space-6);
+  border: 1px solid var(--border-color);
+  padding: var(--space-12) var(--space-6);
+  margin-bottom: var(--space-12);
 }
 
 .hero-content {
   max-width: 800px;
+  /* Z-PATTERN: elemen bertingkat rata tengah (judul -> subjudul -> CTA) */
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.badge {
-  display: inline-block;
-  padding: 0.5rem 1.2rem;
-  background: rgba(102, 68, 255, 0.08);
-  color: #6644ff;
-  border-radius: 50px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 2rem;
-  letter-spacing: 0.5px;
-}
-
+/* SCALE: ukuran font terbesar menetapkan Ranked Importance tertinggi */
 .hero-title {
-  font-size: 3.5rem;
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 800;
-  line-height: 1.2;
-  color: #1c1948;
-  margin-bottom: 1.5rem;
+  color: var(--text-main);
+  line-height: 1.1;
+  margin-bottom: var(--space-6);
 }
 
 .hero-subtitle {
-  font-size: 1.15rem;
-  color: #666;
-  line-height: 1.7;
-  margin-bottom: 2.5rem;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-8);
   max-width: 600px;
 }
 
-.hero-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.btn {
-  padding: 0.8rem 2rem;
-  border-radius: 12px;
+.btn-primary {
+  display: inline-block;
+  background-color: var(--primary);
+  color: white;
+  font-size: 1.1rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.3s ease;
+  padding: var(--space-3) var(--space-8);
+  border-radius: 12px;
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
+  /* FOCAL POINT: bayangan berwarna membuat tombol lolos Squint Test */
+  box-shadow: 0 8px 20px rgba(102, 68, 255, 0.3);
 }
 
-.btn-primary {
-  background: #6644ff;
-  color: white;
-  box-shadow: 0 4px 15px rgba(102, 68, 255, 0.2);
-}
 .btn-primary:hover {
-  background: #5533ee;
+  background-color: var(--primary-hover);
   transform: translateY(-2px);
 }
 
-.btn-secondary {
-  background: white;
-  color: #1c1948;
-  border: 1px solid #e0e0e0;
-}
-.btn-secondary:hover {
-  border-color: #6644ff;
-  color: #6644ff;
-  transform: translateY(-2px);
+.features-section {
+  padding-bottom: var(--space-12);
 }
 
-.features {
+.features-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.features-header h2 {
+  font-size: 2.2rem;
+  color: var(--text-main);
+  margin-bottom: var(--space-2);
+}
+
+.features-header p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.features-grid {
+  /* GRID SYSTEM: membagi fitur menjadi kolom rata sejajar */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-8);
 }
 
 .feature-card {
-  background: white;
-  padding: 2.5rem;
-  border-radius: 16px;
-  border: 1px solid #f0f0f0;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-  transition: all 0.3s ease;
+  background: var(--bg-light);
+  padding: var(--space-8);
+  border-radius: var(--space-4);
+  border: 1px solid var(--border-color);
   text-align: center;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
+
 .feature-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  border-color: #e0e0e0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
 }
 
 .feature-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  color: var(--primary);
+  margin-bottom: var(--space-4);
 }
 
 .feature-card h3 {
-  color: #1c1948;
-  margin-bottom: 1rem;
   font-size: 1.3rem;
+  color: var(--text-main);
+  margin-bottom: var(--space-2);
 }
 
 .feature-card p {
-  color: #666;
+  color: var(--text-muted);
   line-height: 1.6;
 }
 
 .sitemap-visual {
-  padding: 3rem;
-  background: #fafafa;
-  border-radius: 16px;
-  border: 1px solid #f0f0f0;
+  padding: var(--space-12);
+  background: var(--bg-gray);
+  border-radius: var(--space-4);
+  border: 1px solid var(--border-color);
 }
 .sitemap-visual h2 {
-  color: #1c1948;
-  margin-bottom: 0.5rem;
+  color: var(--text-main);
+  margin-bottom: var(--space-2);
 }
 .sitemap-desc {
-  color: #666;
-  margin-bottom: 2.5rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-8);
 }
 
 .tree,
@@ -216,7 +222,7 @@ const features = computed(() => [
   padding-left: 20px;
 }
 .tree li {
-  margin: 12px 0;
+  margin: var(--space-3) 0;
   position: relative;
 }
 .tree li::before {
@@ -233,30 +239,29 @@ const features = computed(() => [
   text-decoration: none;
   color: #444;
   font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--space-2);
   display: inline-block;
   transition: all 0.2s;
   background: white;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
 }
 .tree a:hover {
   border-color: #ccc;
-  color: #1c1948;
+  color: var(--text-main);
 }
 .tree .router-link-exact-active {
-  background: #6644ff;
+  background: var(--primary);
   color: white;
-  border-color: #6644ff;
+  border-color: var(--primary);
 }
 
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.5rem;
+  .hero-subtitle {
+    font-size: 1.1rem;
   }
-  .hero-actions {
-    flex-direction: column;
-    width: 100%;
+  .sitemap-visual {
+    padding: var(--space-6);
   }
 }
 

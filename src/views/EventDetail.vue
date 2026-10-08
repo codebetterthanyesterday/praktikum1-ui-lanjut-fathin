@@ -1,8 +1,22 @@
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { Calendar, MapPin, Users } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
+import { findEvent } from '@/data/events'
 
-const { t } = useLanguage()
+const route = useRoute()
+const { t, formatDate } = useLanguage()
+
+const event = computed(() => findEvent(route.params.id))
+
+const agenda = [
+  { time: '09:00 AM', key: 'item1' },
+  { time: '10:00 AM', key: 'item2' },
+  { time: '11:30 AM', key: 'item3' },
+  { time: '01:00 PM', key: 'item4' },
+  { time: '03:00 PM', key: 'item5' },
+]
 </script>
 
 <template>
@@ -11,54 +25,54 @@ const { t } = useLanguage()
       &larr; {{ t('eventDetail.back') }}
     </button>
 
-    <div class="detail-header">
-      <div class="header-content">
-        <span class="event-tag">{{ t('eventDetail.tag') }}</span>
-        <h1>{{ t('eventDetail.title') }} {{ $route.params.id }}</h1>
+    <template v-if="event">
+      <div class="detail-header">
+        <span class="event-tag">{{ t(`events.categories.${event.cat}`) }}</span>
+        <h1>{{ event.title }}</h1>
         <div class="meta-info">
-          <div class="meta-item">
-            <span class="icon"><Calendar :size="18" /></span>
-            <span>October 15, 2026</span>
-          </div>
-          <div class="meta-item">
-            <span class="icon"><MapPin :size="18" /></span>
-            <span>{{ t('events.location') }}</span>
-          </div>
-          <div class="meta-item">
-            <span class="icon"><Users :size="18" /></span>
-            <span>500+ {{ t('eventDetail.attendees') }}</span>
-          </div>
+          <span class="meta-item">
+            <Calendar :size="18" class="meta-icon" /> {{ formatDate(event.date, 'long') }}
+          </span>
+          <span class="meta-item"><MapPin :size="18" class="meta-icon" /> {{ event.loc }}</span>
+          <span class="meta-item">
+            <Users :size="18" class="meta-icon" /> {{ t('eventDetail.quota', { n: event.quota }) }}
+          </span>
         </div>
       </div>
-    </div>
 
-    <div class="detail-content">
-      <div class="main-desc">
-        <h2>{{ t('eventDetail.aboutTitle') }}</h2>
-        <p>
-          {{ t('eventDetail.aboutDesc1') }}
-        </p>
-        <p>
-          {{ t('eventDetail.aboutDesc2') }}
-        </p>
+      <!-- ASYMMETRICAL LAYOUT -->
+      <div class="detail-content grid-asymmetric">
+        <!-- F-PATTERN: teks panjang dipecah dengan heading & poin daftar -->
+        <div class="main-desc">
+          <h2>{{ t('eventDetail.aboutTitle') }}</h2>
+          <p>{{ t('eventDetail.aboutDesc1') }}</p>
+          <p>{{ t('eventDetail.aboutDesc2') }}</p>
 
-        <h2>{{ t('eventDetail.agendaTitle') }}</h2>
-        <ul class="agenda-list">
-          <li><strong>09:00 AM</strong> - {{ t('eventDetail.agenda.item1') }}</li>
-          <li><strong>10:00 AM</strong> - {{ t('eventDetail.agenda.item2') }}</li>
-          <li><strong>11:30 AM</strong> - {{ t('eventDetail.agenda.item3') }}</li>
-          <li><strong>01:00 PM</strong> - {{ t('eventDetail.agenda.item4') }}</li>
-        </ul>
-      </div>
-      <div class="sidebar">
-        <div class="ticket-card">
-          <h3>{{ t('eventDetail.registration') }}</h3>
-          <p class="price">{{ t('eventDetail.free') }}</p>
-          <p class="ticket-desc">{{ t('eventDetail.ticketDesc') }}</p>
-          <button class="btn-register">{{ t('eventDetail.registerBtn') }}</button>
-          <p class="spots">{{ t('eventDetail.spots') }}</p>
+          <h2>{{ t('eventDetail.agendaTitle') }}</h2>
+          <ul class="agenda-list">
+            <li v-for="item in agenda" :key="item.key">
+              <strong>{{ item.time }}</strong> - {{ t(`eventDetail.agenda.${item.key}`) }}
+            </li>
+          </ul>
         </div>
+
+        <!-- FOCAL POINT & STICKY PANE -->
+        <aside class="sidebar">
+          <div class="ticket-card sticky-pane">
+            <h3>{{ t('eventDetail.registration') }}</h3>
+            <p class="price">{{ t('eventDetail.free') }}</p>
+            <p class="ticket-desc">{{ t('eventDetail.ticketDesc') }}</p>
+            <!-- STRONGEST FOCAL POINT -->
+            <button type="button" class="btn-register">{{ t('eventDetail.registerBtn') }}</button>
+            <p class="spots">{{ t('eventDetail.spots', { n: event.seatsLeft }) }}</p>
+          </div>
+        </aside>
       </div>
+    </template>
+
+    <div v-else class="detail-header not-found">
+      <h1>{{ t('eventDetail.notFoundTitle') }}</h1>
+      <p>{{ t('eventDetail.notFoundDesc') }}</p>
     </div>
   </div>
 </template>
@@ -67,181 +81,179 @@ const { t } = useLanguage()
 .btn-back {
   background: none;
   border: none;
-  color: #666;
+  color: var(--text-muted);
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-6);
   transition: color 0.2s;
-  padding: 0;
 }
 .btn-back:hover {
-  color: #6644ff;
+  color: var(--primary);
 }
 
 .detail-header {
-  background: #fdfdfd;
-  border-radius: 20px;
-  border: 1px solid #f0f0f0;
-  padding: 4rem 3rem;
-  margin-bottom: 3rem;
-}
-
-.header-content {
-  max-width: 800px;
+  background: var(--bg-light);
+  border-radius: var(--space-4);
+  border: 1px solid var(--border-color);
+  padding: var(--space-12) var(--space-8);
+  margin-bottom: var(--space-8);
 }
 
 .event-tag {
   display: inline-block;
-  background: rgba(102, 68, 255, 0.1);
-  color: #6644ff;
-  padding: 0.4rem 1rem;
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: var(--space-1) var(--space-4);
   border-radius: 50px;
   font-weight: 600;
   font-size: 0.9rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-4);
 }
 
-.header-content h1 {
-  color: #1c1948;
+.detail-header h1 {
+  color: var(--text-main);
   font-size: 2.8rem;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-4);
   line-height: 1.2;
 }
 
 .meta-info {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: var(--space-3) var(--space-6);
 }
 
 .meta-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.8rem;
-  color: #555;
+  gap: var(--space-2);
+  color: var(--text-muted);
   font-weight: 500;
   font-size: 1.05rem;
 }
 
-.icon {
-  display: flex;
-  align-items: center;
-  color: #6644ff;
+.meta-icon {
+  color: var(--primary);
+  flex-shrink: 0;
 }
 
-.detail-content {
-  display: flex;
-  gap: 4rem;
+.not-found p {
+  color: var(--text-muted);
 }
 
-.main-desc {
-  flex: 2;
+/* ASYMMETRICAL GRID: rasio lebar 2:1 (setara 8:4 pada kerangka 12-kolom).
+   minmax(0, ...) menjaga kolom tidak melebar mengikuti isi yang panjang. */
+.grid-asymmetric {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--space-12);
 }
 
+/* F-PATTERN: aksen kiri pada heading menjadi jangkar pemindaian vertikal */
 .main-desc h2 {
-  color: #1c1948;
-  margin-bottom: 1.5rem;
+  color: var(--text-main);
+  margin-bottom: var(--space-4);
   font-size: 1.8rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.main-desc h2::before {
-  content: '';
-  display: block;
-  width: 20px;
-  height: 4px;
-  background: #6644ff;
-  border-radius: 2px;
+  border-left: 4px solid var(--primary);
+  padding-left: var(--space-2);
 }
 
 .main-desc p {
-  color: #444;
+  color: var(--text-muted);
   line-height: 1.8;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6);
   font-size: 1.05rem;
 }
 
 .agenda-list {
   list-style: none;
-  padding: 0;
-  margin: 0;
+  margin-bottom: var(--space-8);
 }
 
 .agenda-list li {
-  padding: 1rem 0;
-  border-bottom: 1px solid #f0f0f0;
-  color: #444;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
   font-size: 1.05rem;
 }
 
-.sidebar {
-  flex: 1;
+.agenda-list strong {
+  color: var(--text-main);
 }
 
+/* FOCAL POINT CARD */
 .ticket-card {
   background: white;
-  padding: 2.5rem;
-  border-radius: 16px;
-  border: 1px solid #f0f0f0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  padding: var(--space-8);
+  border-radius: var(--space-4);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
   text-align: center;
+}
+
+/* STICKY BEHAVIOR: kartu tiket tetap terlihat tepat di bawah navbar saat halaman di-scroll.
+   Kolom .sidebar harus setinggi baris grid (stretch bawaan) agar kartu punya ruang untuk menempel. */
+.sticky-pane {
   position: sticky;
-  top: 100px;
+  top: calc(var(--navbar-height) + var(--space-6));
 }
 
 .ticket-card h3 {
-  color: #1c1948;
+  color: var(--text-main);
   font-size: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-2);
 }
 
 .price {
   font-size: 2.8rem;
   font-weight: 800;
-  color: #6644ff;
-  margin-bottom: 0.5rem;
+  color: var(--primary);
+  margin-bottom: var(--space-2);
 }
 
 .ticket-desc {
-  color: #666;
-  margin-bottom: 2rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-6);
 }
 
+/* Kontras tertinggi di halaman: satu-satunya blok warna primer yang solid */
 .btn-register {
   width: 100%;
-  padding: 1.2rem;
-  background: #1c1948;
+  padding: var(--space-4);
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 12px;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.2s;
 }
 
 .btn-register:hover {
-  background: #6644ff;
+  background: var(--primary-hover);
 }
 
 .spots {
-  margin-top: 1.5rem;
-  color: #e63946;
+  margin-top: var(--space-4);
+  color: var(--danger);
   font-weight: 600;
   font-size: 0.95rem;
 }
 
 @media (max-width: 900px) {
-  .detail-content {
-    flex-direction: column;
+  .grid-asymmetric {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+  .sticky-pane {
+    position: static;
   }
   .detail-header {
-    padding: 3rem 2rem;
+    padding: var(--space-8) var(--space-6);
   }
-  .header-content h1 {
+  .detail-header h1 {
     font-size: 2.2rem;
   }
 }

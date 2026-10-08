@@ -11,20 +11,41 @@ const translations = {
       eventList: 'Event List',
       eventDetail: 'Event Detail (Sample)',
       category: 'Category',
-      contact: 'Contact'
+      contact: 'Contact',
+      dashboard: 'Organizer Dashboard'
+    },
+    dashboard: {
+      brand: 'Gatherly Organizer',
+      title: 'Dashboard',
+      admin: 'Admin',
+      overview: 'Overview',
+      myEvents: 'My Events',
+      attendees: 'Attendees',
+      checkin: 'QR Check-in',
+      back: 'Back to Public',
+      welcome: 'Welcome back, Organizer',
+      ticketsSold: 'Total Tickets Sold',
+      pageViews: 'Page Views',
+      revenue: 'Revenue',
+      recent: 'Recent Registrations',
+      colName: 'Attendee Name',
+      colEvent: 'Event',
+      colDate: 'Registration Date',
+      colStatus: 'Status',
+      confirmed: 'Confirmed'
     },
     home: {
-      badge: 'Welcome to Gatherly',
       title: 'Connect, Discover, and Experience',
-      subtitle: 'Join our vibrant community to explore the best events tailored for you. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      subtitle: 'A community event platform designed to bring ideas together. Discover hundreds of events near you.',
       discoverBtn: 'Discover Events',
-      learnMoreBtn: 'Learn More',
-      curatedTitle: 'Curated Events',
-      curatedDesc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-      globalTitle: 'Global Reach',
-      globalDesc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-      communityTitle: 'Community Driven',
-      communityDesc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      featuresTitle: 'Why Choose Gatherly?',
+      featuresDesc: 'Everything you need to host or attend unforgettable events.',
+      discoverTitle: 'Discover Easily',
+      discoverDesc: 'Find events tailored to your interests using our smart category and location filters.',
+      ticketingTitle: 'Seamless Ticketing',
+      ticketingDesc: 'Register with one click and get your digital QR ticket instantly on your device.',
+      hostTitle: 'Host Like a Pro',
+      hostDesc: 'Manage attendees, track revenue, and scan QR codes with our comprehensive dashboard.',
       sitemapTitle: 'Website Structure / Site-Map',
       sitemapDesc: 'A quick overview of how this application is structured via Vue Router.'
     },
@@ -44,12 +65,15 @@ const translations = {
     },
     events: {
       title: 'Upcoming Events',
-      desc: 'Discover the latest gatherings and activities happening near you.',
-      category: 'Community',
-      gathering: 'Community Gathering',
-      location: 'Main Auditorium, City Center',
-      eventDesc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at velit vel magna interdum scelerisque.',
-      viewDetails: 'View Details'
+      desc: 'Discover workshops, seminars, tech meetups, and competitions near you.',
+      viewDetails: 'View Event Details',
+      categories: {
+        workshop: 'Workshop',
+        meetup: 'Meetup',
+        competition: 'Competition',
+        seminar: 'Seminar',
+        conference: 'Conference'
+      }
     },
     about: {
       title: 'About Gatherly',
@@ -77,24 +101,25 @@ const translations = {
     },
     eventDetail: {
       back: 'Back to Events',
-      tag: 'Community Event',
-      title: 'Community Gathering',
-      attendees: 'Attendees',
+      quota: 'Quota: {n} Attendees',
       aboutTitle: 'About This Event',
-      aboutDesc1: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.',
-      aboutDesc2: 'Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere. Praesent id metus massa, ut blandit odio. Proin quis tortor orci. Etiam at risus et justo dignissim congue. Donec congue lacinia dui, a porttitor lectus condimentum laoreet. Nunc eu ullamcorper orci.',
-      agendaTitle: 'Agenda',
+      aboutDesc1: 'Welcome to the biggest web interface development training event of the year! Gatherly is collaborating with the local developer community to host a comprehensive workshop designed specifically to bring together professionals, enthusiasts, and students.',
+      aboutDesc2: 'In this session, we will discuss various current industry challenges, dissect the implementation of Single Page Applications (SPA), and practice hands-on Layout System design prioritizing visual hierarchy. You will gain practical insights that can be directly applied to your future projects or career.',
+      agendaTitle: 'Event Agenda',
       agenda: {
-        item1: 'Registration & Welcome Coffee',
-        item2: 'Opening Keynote Speech',
-        item3: 'Networking Session',
-        item4: 'Closing Remarks'
+        item1: 'Registration & QR Check-in Scanning',
+        item2: 'Session 1: Vue Router & Navigation Fundamentals',
+        item3: 'Coffee Break & Networking Session',
+        item4: 'Session 2: Layout System & Grid Implementation',
+        item5: 'Q&A & Closing Remarks'
       },
-      registration: 'Registration',
+      registration: 'Attendee Registration',
       free: 'Free',
-      ticketDesc: 'Secure your spot today before it runs out.',
+      ticketDesc: 'Secure your seat now before the quota is full.',
       registerBtn: 'Register Now',
-      spots: 'Only 45 spots left!'
+      spots: 'Only {n} seats left!',
+      notFoundTitle: 'Event not found',
+      notFoundDesc: 'The event you are looking for does not exist or has been removed.'
     }
   },
   ID: {
@@ -105,20 +130,41 @@ const translations = {
       eventList: 'Daftar Acara',
       eventDetail: 'Detail Acara (Contoh)',
       category: 'Kategori',
-      contact: 'Kontak'
+      contact: 'Kontak',
+      dashboard: 'Dashboard Organizer'
+    },
+    dashboard: {
+      brand: 'Gatherly Organizer',
+      title: 'Dashboard',
+      admin: 'Admin',
+      overview: 'Ringkasan',
+      myEvents: 'Acara Saya',
+      attendees: 'Peserta',
+      checkin: 'QR Check-in',
+      back: 'Kembali ke Publik',
+      welcome: 'Selamat datang kembali, Organizer',
+      ticketsSold: 'Total Tiket Terjual',
+      pageViews: 'Tayangan Halaman',
+      revenue: 'Pendapatan',
+      recent: 'Pendaftaran Terbaru',
+      colName: 'Nama Peserta',
+      colEvent: 'Acara',
+      colDate: 'Tanggal Daftar',
+      colStatus: 'Status',
+      confirmed: 'Terkonfirmasi'
     },
     home: {
-      badge: 'Selamat datang di Gatherly',
       title: 'Hubungkan, Temukan, dan Nikmati',
-      subtitle: 'Bergabunglah dengan komunitas kami yang dinamis untuk menjelajahi acara terbaik yang disesuaikan untuk Anda. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      subtitle: 'Platform acara komunitas yang dirancang untuk mempertemukan ide. Temukan ratusan acara di dekat Anda.',
       discoverBtn: 'Temukan Acara',
-      learnMoreBtn: 'Pelajari Lebih Lanjut',
-      curatedTitle: 'Acara Terkurasi',
-      curatedDesc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-      globalTitle: 'Jangkauan Global',
-      globalDesc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-      communityTitle: 'Berbasis Komunitas',
-      communityDesc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      featuresTitle: 'Mengapa Memilih Gatherly?',
+      featuresDesc: 'Semua yang Anda butuhkan untuk mengadakan atau menghadiri acara tak terlupakan.',
+      discoverTitle: 'Temukan dengan Mudah',
+      discoverDesc: 'Temukan acara yang sesuai minat Anda dengan filter kategori dan lokasi yang cerdas.',
+      ticketingTitle: 'Tiket Tanpa Ribet',
+      ticketingDesc: 'Daftar dengan satu klik dan dapatkan tiket QR digital langsung di perangkat Anda.',
+      hostTitle: 'Kelola Seperti Profesional',
+      hostDesc: 'Kelola peserta, pantau pendapatan, dan pindai kode QR lewat dashboard yang lengkap.',
       sitemapTitle: 'Struktur Situs web / Peta Situs',
       sitemapDesc: 'Gambaran singkat tentang bagaimana aplikasi ini disusun melalui Vue Router.'
     },
@@ -138,12 +184,15 @@ const translations = {
     },
     events: {
       title: 'Acara Mendatang',
-      desc: 'Temukan pertemuan dan kegiatan terbaru yang terjadi di dekat Anda.',
-      category: 'Komunitas',
-      gathering: 'Pertemuan Komunitas',
-      location: 'Auditorium Utama, Pusat Kota',
-      eventDesc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at velit vel magna interdum scelerisque.',
-      viewDetails: 'Lihat Detail'
+      desc: 'Temukan workshop, seminar, tech meetup, dan kompetisi di dekat Anda.',
+      viewDetails: 'Lihat Detail Acara',
+      categories: {
+        workshop: 'Workshop',
+        meetup: 'Meetup',
+        competition: 'Kompetisi',
+        seminar: 'Seminar',
+        conference: 'Konferensi'
+      }
     },
     about: {
       title: 'Tentang Gatherly',
@@ -171,38 +220,52 @@ const translations = {
     },
     eventDetail: {
       back: 'Kembali ke Acara',
-      tag: 'Acara Komunitas',
-      title: 'Pertemuan Komunitas',
-      attendees: 'Peserta',
+      quota: 'Kuota: {n} Peserta',
       aboutTitle: 'Tentang Acara Ini',
-      aboutDesc1: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.',
-      aboutDesc2: 'Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere. Praesent id metus massa, ut blandit odio. Proin quis tortor orci. Etiam at risus et justo dignissim congue. Donec congue lacinia dui, a porttitor lectus condimentum laoreet. Nunc eu ullamcorper orci.',
-      agendaTitle: 'Agenda',
+      aboutDesc1: 'Selamat datang di acara pelatihan pengembangan antarmuka web terbesar tahun ini! Gatherly berkolaborasi dengan komunitas developer lokal untuk menghadirkan workshop komprehensif yang dirancang khusus untuk mempertemukan profesional, pegiat, dan mahasiswa.',
+      aboutDesc2: 'Dalam sesi ini, kita akan membahas berbagai tantangan industri terkini, membedah implementasi Single Page Application (SPA), dan mempraktikkan langsung perancangan Layout System yang mengutamakan hierarki visual. Anda akan memperoleh wawasan praktis yang dapat langsung diterapkan pada proyek atau karier Anda.',
+      agendaTitle: 'Agenda Acara',
       agenda: {
-        item1: 'Pendaftaran & Kopi Selamat Datang',
-        item2: 'Pidato Pembukaan',
-        item3: 'Sesi Jaringan',
-        item4: 'Penutupan'
+        item1: 'Registrasi & Pemindaian QR Check-in',
+        item2: 'Sesi 1: Dasar-dasar Vue Router & Navigasi',
+        item3: 'Rehat Kopi & Sesi Networking',
+        item4: 'Sesi 2: Implementasi Layout System & Grid',
+        item5: 'Tanya Jawab & Penutupan'
       },
-      registration: 'Pendaftaran',
+      registration: 'Pendaftaran Peserta',
       free: 'Gratis',
-      ticketDesc: 'Amankan tempat Anda hari ini sebelum kehabisan.',
+      ticketDesc: 'Amankan kursi Anda sekarang sebelum kuota penuh.',
       registerBtn: 'Daftar Sekarang',
-      spots: 'Hanya tersisa 45 tempat!'
+      spots: 'Hanya tersisa {n} kursi!',
+      notFoundTitle: 'Acara tidak ditemukan',
+      notFoundDesc: 'Acara yang Anda cari tidak ada atau sudah dihapus.'
     }
   }
 }
 
+const dateLocales = { EN: 'en-US', ID: 'id-ID' }
+
 export function useLanguage() {
-  const t = (key) => {
+  // t('eventDetail.spots', { n: 12 }) -> placeholder {n} diganti dengan nilai params
+  const t = (key, params = {}) => {
     const keys = key.split('.')
     let value = translations[locale.value]
     for (const k of keys) {
       if (value === undefined) return key
       value = value[k]
     }
-    return value || key
+    if (typeof value !== 'string') return key
+    return value.replace(/\{(\w+)\}/g, (match, name) => params[name] ?? match)
   }
+
+  // Tanggal ISO (YYYY-MM-DD) -> format sesuai bahasa aktif, mis. "Oct 12, 2026"
+  const formatDate = (iso, month = 'short') =>
+    new Intl.DateTimeFormat(dateLocales[locale.value], {
+      day: '2-digit',
+      month,
+      year: 'numeric',
+      timeZone: 'UTC'
+    }).format(new Date(iso))
 
   const toggleLocale = () => {
     locale.value = locale.value === 'EN' ? 'ID' : 'EN'
@@ -211,6 +274,7 @@ export function useLanguage() {
   return {
     locale,
     t,
+    formatDate,
     toggleLocale
   }
 }

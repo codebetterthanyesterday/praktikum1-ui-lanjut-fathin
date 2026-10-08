@@ -24,6 +24,7 @@ const menus = computed(() => [
     ],
   },
   { name: t('nav.contact'), path: '/contact' },
+  { name: t('nav.dashboard'), path: '/dashboard' },
 ])
 
 const handleScroll = () => {
@@ -315,6 +316,7 @@ onUnmounted(() => {
   font-weight: 500;
   padding: 0.5rem 1.25rem;
   border-radius: 10px;
+  white-space: nowrap;
   transition: all 0.3s ease;
 }
 
@@ -477,12 +479,12 @@ onUnmounted(() => {
   transform: scale(1.05);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   .nav-menu {
     gap: 1rem;
   }
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .nav-menu {
     display: none;
   }
@@ -496,7 +498,7 @@ onUnmounted(() => {
     display: flex;
   }
 }
-@media (min-width: 769px) {
+@media (min-width: 1025px) {
   .hamburger-btn {
     display: none;
   }

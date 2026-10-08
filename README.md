@@ -15,23 +15,37 @@ Gatherly is a modern, premium web application designed to connect people through
 - **Dynamic Routing**: Built-in Vue Router configuration supporting nested routes, dynamic active states, and custom animated Breadcrumb navigation.
 - **Modern Iconography**: Beautiful and consistent SVG icons provided by `lucide-vue-next`.
 
+## 📐 Layout System & Visual Hierarchy (Modul 2)
+
+| Concept | Where | How |
+| --- | --- | --- |
+| Spatial system (base-8) & color tokens | `src/assets/main.css` | `--space-*` and color variables used by every Modul 2 component |
+| The Fold & Z-Pattern | `views/Home.vue` | `min-height: 65vh` hero keeps the primary CTA above the fold; navbar → headline → CTA → feature grid |
+| Adaptive grid & common regions | `views/EventList.vue` | `repeat(auto-fill, minmax(320px, 1fr))`, bordered cards group date, title and description |
+| Asymmetrical layout, F-Pattern & focal point | `views/EventDetail.vue` | `2fr 1fr` grid, headings + agenda list on the left, sticky ticket card with the highest-contrast button on the right |
+| Rail & Pane (data density) | `layouts/DashboardLayout.vue`, `views/Dashboard.vue` | Locked `100vh` shell, static rail, independently scrolling pane with a dense table |
+
 ## 📂 Project Structure
 
 ```text
 src/
-├── assets/          # Global styles (main.css) and static assets
+├── assets/          # Global styles (main.css): spacing scale, color tokens, 12-column grid
 ├── components/
 │   └── app/         # Core application components (Navbar.vue, Breadcrumb.vue)
-├── composables/     # Vue composables (useLanguage.js for i18n)
-├── layouts/         # Layout wrappers (App.vue)
+├── composables/     # Vue composables (useLanguage.js for i18n & date formatting)
+├── data/            # Shared mock data (events.js)
+├── layouts/
+│   ├── App.vue              # Public layout (Navbar + Breadcrumb + page)
+│   └── DashboardLayout.vue  # Rail & Pane layout for the organizer workspace
 ├── router/          # Vue Router configuration (index.js)
 └── views/           # Page components
-    ├── Home.vue         # Landing page
+    ├── Home.vue         # Landing page (The Fold + Z-Pattern)
     ├── About.vue        # Mission & Vision
     ├── Browse.vue       # Main nested routing wrapper
     ├── Category.vue     # Event categories grid
-    ├── EventList.vue    # List of upcoming events
-    ├── EventDetail.vue  # Specific event page (with ticketing/agenda)
+    ├── EventList.vue    # Event catalog (adaptive grid + common regions)
+    ├── EventDetail.vue  # Conversion page (asymmetrical 2:1 + F-Pattern + sticky CTA)
+    ├── Dashboard.vue    # Organizer overview (metric cards + dense data table)
     └── Contact.vue      # Contact form and details
 ```
 

@@ -11,7 +11,7 @@ const metrics = computed(() => [
   { label: t('dashboard.revenue'), value: '$12,450' },
 ])
 
-// Data contoh: cukup banyak baris agar pane benar-benar bisa digulir secara mandiri
+// data dummy
 const registrations = Array.from({ length: 12 }, (_, i) => ({
   id: i + 1,
   name: `John Doe ${i + 1}`,
@@ -24,8 +24,6 @@ const registrations = Array.from({ length: 12 }, (_, i) => ({
   <div class="dashboard-overview">
     <h2>{{ t('dashboard.welcome') }}</h2>
 
-    <!-- GROUPING & PROXIMITY:
-         Data metrik dikelompokkan ke dalam kartu agar mudah dibaca sekilas. -->
     <div class="metrics-grid">
       <div class="metric-card" v-for="metric in metrics" :key="metric.label">
         <h3>{{ metric.label }}</h3>
@@ -33,9 +31,6 @@ const registrations = Array.from({ length: 12 }, (_, i) => ({
       </div>
     </div>
 
-    <!-- DATA DENSITY & F-PATTERN:
-         Tabel memaksimalkan kepadatan informasi agar mata dapat
-         melakukan scanning baris demi baris (F-Pattern). -->
     <div class="data-table-container">
       <h3>{{ t('dashboard.recent') }}</h3>
       <div class="table-scroll">
@@ -70,7 +65,6 @@ const registrations = Array.from({ length: 12 }, (_, i) => ({
   color: var(--text-main);
 }
 
-/* GRID untuk menyusun metrik secara proporsional */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
@@ -86,7 +80,6 @@ const registrations = Array.from({ length: 12 }, (_, i) => ({
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
-/* SCALE: label kecil & redup, angka besar & berwarna -> angka terbaca lebih dulu */
 .metric-card h3 {
   font-size: 1rem;
   color: var(--text-muted);
@@ -99,7 +92,6 @@ const registrations = Array.from({ length: 12 }, (_, i) => ({
   color: var(--primary);
 }
 
-/* TABLE STYLES - Mengutamakan kerapian baris untuk Data Density */
 .data-table-container {
   background: white;
   padding: var(--space-6);
@@ -112,7 +104,6 @@ const registrations = Array.from({ length: 12 }, (_, i) => ({
   font-size: 1.2rem;
 }
 
-/* Di layar sempit tabel digulir horizontal di sini, bukan membuat seluruh halaman melebar */
 .table-scroll {
   overflow-x: auto;
 }

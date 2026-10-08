@@ -67,6 +67,9 @@ const translations = {
       title: 'Upcoming Events',
       desc: 'Discover workshops, seminars, tech meetups, and competitions near you.',
       viewDetails: 'View Event Details',
+      searchPlaceholder: 'Search events by title or location...',
+      all: 'All',
+      empty: 'No events found matching your criteria.',
       categories: {
         workshop: 'Workshop',
         meetup: 'Meetup',
@@ -186,6 +189,9 @@ const translations = {
       title: 'Acara Mendatang',
       desc: 'Temukan workshop, seminar, tech meetup, dan kompetisi di dekat Anda.',
       viewDetails: 'Lihat Detail Acara',
+      searchPlaceholder: 'Cari acara berdasarkan judul atau lokasi...',
+      all: 'Semua',
+      empty: 'Tidak ada acara yang cocok dengan kriteria Anda.',
       categories: {
         workshop: 'Workshop',
         meetup: 'Meetup',
@@ -246,7 +252,6 @@ const translations = {
 const dateLocales = { EN: 'en-US', ID: 'id-ID' }
 
 export function useLanguage() {
-  // t('eventDetail.spots', { n: 12 }) -> placeholder {n} diganti dengan nilai params
   const t = (key, params = {}) => {
     const keys = key.split('.')
     let value = translations[locale.value]
@@ -258,7 +263,6 @@ export function useLanguage() {
     return value.replace(/\{(\w+)\}/g, (match, name) => params[name] ?? match)
   }
 
-  // Tanggal ISO (YYYY-MM-DD) -> format sesuai bahasa aktif, mis. "Oct 12, 2026"
   const formatDate = (iso, month = 'short') =>
     new Intl.DateTimeFormat(dateLocales[locale.value], {
       day: '2-digit',

@@ -95,7 +95,6 @@ onUnmounted(() => {
             </svg>
           </router-link>
 
-          <!-- First Level Dropdown -->
           <ul v-if="menu.children" class="dropdown-menu">
             <li v-for="child in menu.children" :key="child.name" class="dropdown-item">
               <router-link :to="child.path" class="dropdown-link">
@@ -116,7 +115,6 @@ onUnmounted(() => {
                 </svg>
               </router-link>
 
-              <!-- Second Level Dropdown (Submenu) -->
               <ul v-if="child.children" class="submenu">
                 <li v-for="subchild in child.children" :key="subchild.name" class="submenu-item">
                   <router-link :to="subchild.path" class="dropdown-link">
@@ -184,7 +182,6 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- Mobile Menu -->
     <div class="mobile-menu" :class="{ 'is-open': isMobileMenuOpen }">
       <ul class="mobile-nav-menu">
         <li class="mobile-nav-item" v-for="menu in menus" :key="menu.name">
@@ -234,7 +231,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* NAVBAR FULL-WIDTH menyatu dengan bagian atas layar */
 .navbar {
   width: 100%;
   background: var(--nav-bg, #1c1948);
@@ -303,7 +299,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   height: 100%;
-  padding: 1rem 0; /* Memberi ruang hover */
+  padding: 1rem 0;
 }
 
 .nav-link {
@@ -341,17 +337,13 @@ onUnmounted(() => {
   transform: rotate(180deg);
 }
 
-/* ==================================
-   DROPDOWN & SUBMENU STYLES
-   Inspired by user reference image
-   ================================== */
 .dropdown-menu {
-  display: none; /* diubah jadi block saat hover */
+  display: none;
   position: absolute;
   top: 100%;
   left: 0;
 
-  background-color: #d8d8d8; /* warna abu seperti referensi */
+  background-color: #d8d8d8;
   min-width: 200px;
   list-style: none;
   padding: 0;
@@ -360,14 +352,13 @@ onUnmounted(() => {
   border-radius: 4px;
 }
 
-/* Tampilkan dropdown level 1 saat nav-item di-hover */
 .nav-item:hover .dropdown-menu {
   display: block;
   animation: fadeIn 0.2s ease-out;
 }
 
 .dropdown-item {
-  position: relative; /* relative untuk submenu absolut */
+  position: relative;
 }
 
 .dropdown-link {
@@ -376,7 +367,7 @@ onUnmounted(() => {
   align-items: center;
   padding: 12px 20px;
   text-decoration: none;
-  color: #333; /* text gelap */
+  color: #333;
   font-size: 0.95rem;
   transition:
     background-color 0.2s,
@@ -385,16 +376,14 @@ onUnmounted(() => {
 }
 
 .dropdown-link:hover {
-  background-color: #c4c4c4; /* efek hover lebih gelap sedikit */
+  background-color: #c4c4c4;
   color: #000;
 }
 
-/* Hilangkan border bawah pada item terakhir */
 .dropdown-item:last-child .dropdown-link {
   border-bottom: none;
 }
 
-/* Submenu (Level 2) */
 .submenu {
   display: none;
   position: absolute;
@@ -409,7 +398,6 @@ onUnmounted(() => {
   border-radius: 4px;
 }
 
-/* Tampilkan submenu level 2 saat dropdown-item di-hover */
 .dropdown-item:hover .submenu {
   display: block;
   animation: fadeIn 0.2s ease-out;
@@ -426,13 +414,6 @@ onUnmounted(() => {
   }
 }
 
-/* Submenu pada parent (jika left:100% terlalu mentok layar)
-   Kita bisa membiarkannya default left 100%.
-*/
-
-/* ==================================
-   RIGHT SECTION
-   ================================== */
 .nav-right {
   display: flex;
   align-items: center;
@@ -507,7 +488,6 @@ onUnmounted(() => {
   }
 }
 
-/* Mobile Menu Styles */
 .mobile-menu {
   position: absolute;
   top: 100%;
@@ -544,7 +524,6 @@ onUnmounted(() => {
   gap: 1.75rem;
 }
 
-/* Staggered Animation Setup */
 .mobile-nav-item {
   opacity: 0;
   transform: translateY(15px);
@@ -556,7 +535,6 @@ onUnmounted(() => {
   transform: translateY(0);
 }
 
-/* Delay for each item to create a cascading effect */
 .mobile-menu.is-open .mobile-nav-item:nth-child(1) {
   transition-delay: 0.1s;
 }
@@ -593,7 +571,6 @@ onUnmounted(() => {
   transform: translateX(12px);
 }
 
-/* Highlight accent for active link */
 .mobile-nav-link.active::before {
   content: '';
   display: block;

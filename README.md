@@ -61,9 +61,3 @@ src/
 ├── router/         index.js
 └── views/          halaman-halamannya
 ```
-
-## Catatan
-
-- Datanya masih dummy, belum ada backend.
-- Ganti bahasa dibuat sendiri pakai composable, ga pakai vue-i18n.
-- Icon dari `lucide-vue-next`.

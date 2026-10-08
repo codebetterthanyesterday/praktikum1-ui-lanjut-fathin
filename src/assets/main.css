@@ -7,8 +7,6 @@
 }
 
 :root {
-  /* SPATIAL SYSTEM (BASE-8)
-     Digunakan untuk konsistensi jarak, margin, dan padding */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -18,7 +16,6 @@
   --space-12: 48px;
   --space-16: 64px;
 
-  /* COLOR SYSTEM & CONTRAST */
   --primary: #6644ff;
   --primary-hover: #5533ee;
   --primary-soft: rgba(102, 68, 255, 0.1);
@@ -35,7 +32,6 @@
   --nav-border: #333;
   --text-white: #ffffff;
 
-  /* LAYOUT: lebar maksimum konten & tinggi navbar (acuan elemen sticky) */
   --container-max: 1440px;
   --navbar-height: 100px;
 }
@@ -61,8 +57,6 @@ button {
   font-family: inherit;
 }
 
-/* GLOBAL GRID SYSTEM
-   Menerapkan 12-kolom grid untuk tata letak yang konsisten */
 .grid-12 {
   display: grid;
   grid-template-columns: repeat(12, 1fr);

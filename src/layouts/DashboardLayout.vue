@@ -6,10 +6,7 @@ const { t } = useLanguage()
 </script>
 
 <template>
-  <!-- RAIL & PANE SYSTEM
-       Kerangka khusus untuk kebutuhan produktivitas/pengelolaan aplikasi. -->
   <div class="dashboard-layout">
-    <!-- RAIL: Navigasi samping yang posisinya terkunci -->
     <aside class="dashboard-rail">
       <div class="rail-brand">
         <RouterLink to="/">{{ t('dashboard.brand') }}</RouterLink>
@@ -27,7 +24,6 @@ const { t } = useLanguage()
       </div>
     </aside>
 
-    <!-- PANE: Area utama dinamis tempat konten berubah dan bisa digulir secara mandiri -->
     <main class="dashboard-pane">
       <header class="pane-header">
         <h1>{{ t('dashboard.title') }}</h1>
@@ -41,11 +37,7 @@ const { t } = useLanguage()
 </template>
 
 <style scoped>
-/*
-  Full-screen app layout (khas dashboard).
-  Tinggi dibatasi setinggi viewport agar rail tidak ikut tergulir saat pane di-scroll.
-  100dvh mengoreksi 100vh pada browser mobile yang address bar-nya bisa menyusut.
-*/
+/* tinggi dikunci segini biar yang scroll cuma bagian pane */
 .dashboard-layout {
   display: flex;
   height: 100vh;
@@ -54,11 +46,10 @@ const { t } = useLanguage()
   background-color: var(--bg-gray);
 }
 
-/* RAIL STYLES */
 .dashboard-rail {
   width: 260px;
   flex-shrink: 0;
-  background-color: var(--nav-bg); /* Kontras gelap membedakan area nav dan konten */
+  background-color: var(--nav-bg);
   color: white;
   display: flex;
   flex-direction: column;
@@ -83,7 +74,6 @@ const { t } = useLanguage()
   overflow-y: auto;
 }
 
-/* Border kiri transparan disiapkan sejak awal agar teks tidak bergeser saat hover/aktif */
 .rail-link {
   padding: var(--space-3) var(--space-6);
   color: #a0a0b0;
@@ -109,13 +99,12 @@ const { t } = useLanguage()
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* PANE STYLES */
 .dashboard-pane {
   flex: 1;
-  min-width: 0; /* izinkan pane menyusut; tabel lebar digulir di dalam kontainernya sendiri */
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* Scroll khusus untuk area ini saja */
+  overflow-y: auto;
 }
 
 .pane-header {
@@ -142,7 +131,6 @@ const { t } = useLanguage()
   padding: var(--space-8);
 }
 
-/* Layar sempit: rail menjadi bilah atas yang tetap terkunci, pane tetap satu-satunya area gulir */
 @media (max-width: 768px) {
   .dashboard-layout {
     flex-direction: column;

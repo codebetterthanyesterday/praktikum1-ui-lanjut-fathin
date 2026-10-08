@@ -1,4 +1,3 @@
-// Satu sumber data acara, dipakai bersama oleh EventList, EventDetail, dan Dashboard.
 export const events = [
   {
     id: 1,

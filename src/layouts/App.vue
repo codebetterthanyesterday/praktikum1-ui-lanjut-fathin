@@ -21,7 +21,6 @@ import Breadcrumb from '@/components/app/Breadcrumb.vue'
 }
 .main-content {
   flex: 1;
-  /* MARGIN: jarak tepi konten & lebar maksimum mengikuti token global */
   padding: var(--space-8);
   max-width: var(--container-max);
   margin: 0 auto;

@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { Calendar, MapPin, Users } from 'lucide-vue-next'
+import AppButton from '@/components/ui/AppButton.vue'
+import AppCard from '@/components/ui/AppCard.vue'
 import { useLanguage } from '@/composables/useLanguage'
 import { findEvent } from '@/data/events'
 
@@ -40,9 +42,7 @@ const agenda = [
         </div>
       </div>
 
-      <!-- ASYMMETRICAL LAYOUT -->
       <div class="detail-content grid-asymmetric">
-        <!-- F-PATTERN: teks panjang dipecah dengan heading & poin daftar -->
         <div class="main-desc">
           <h2>{{ t('eventDetail.aboutTitle') }}</h2>
           <p>{{ t('eventDetail.aboutDesc1') }}</p>
@@ -56,16 +56,16 @@ const agenda = [
           </ul>
         </div>
 
-        <!-- FOCAL POINT & STICKY PANE -->
         <aside class="sidebar">
-          <div class="ticket-card sticky-pane">
+          <AppCard class="ticket-card sticky-pane" :hoverable="false">
             <h3>{{ t('eventDetail.registration') }}</h3>
             <p class="price">{{ t('eventDetail.free') }}</p>
             <p class="ticket-desc">{{ t('eventDetail.ticketDesc') }}</p>
-            <!-- STRONGEST FOCAL POINT -->
-            <button type="button" class="btn-register">{{ t('eventDetail.registerBtn') }}</button>
+            <AppButton variant="primary" class="btn-register">
+              {{ t('eventDetail.registerBtn') }}
+            </AppButton>
             <p class="spots">{{ t('eventDetail.spots', { n: event.seatsLeft }) }}</p>
-          </div>
+          </AppCard>
         </aside>
       </div>
     </template>
@@ -142,15 +142,12 @@ const agenda = [
   color: var(--text-muted);
 }
 
-/* ASYMMETRICAL GRID: rasio lebar 2:1 (setara 8:4 pada kerangka 12-kolom).
-   minmax(0, ...) menjaga kolom tidak melebar mengikuti isi yang panjang. */
 .grid-asymmetric {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: var(--space-12);
 }
 
-/* F-PATTERN: aksen kiri pada heading menjadi jangkar pemindaian vertikal */
 .main-desc h2 {
   color: var(--text-main);
   margin-bottom: var(--space-4);
@@ -182,18 +179,12 @@ const agenda = [
   color: var(--text-main);
 }
 
-/* FOCAL POINT CARD */
 .ticket-card {
-  background: white;
   padding: var(--space-8);
-  border-radius: var(--space-4);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
   text-align: center;
 }
 
-/* STICKY BEHAVIOR: kartu tiket tetap terlihat tepat di bawah navbar saat halaman di-scroll.
-   Kolom .sidebar harus setinggi baris grid (stretch bawaan) agar kartu punya ruang untuk menempel. */
+/* sidebar jangan dikasih align-items: start, nanti sticky-nya ga jalan */
 .sticky-pane {
   position: sticky;
   top: calc(var(--navbar-height) + var(--space-6));
@@ -217,22 +208,8 @@ const agenda = [
   margin-bottom: var(--space-6);
 }
 
-/* Kontras tertinggi di halaman: satu-satunya blok warna primer yang solid */
 .btn-register {
   width: 100%;
-  padding: var(--space-4);
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.btn-register:hover {
-  background: var(--primary-hover);
 }
 
 .spots {

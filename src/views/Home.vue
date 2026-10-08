@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 import { Search, Ticket, ChartColumn } from 'lucide-vue-next'
+import AppButton from '@/components/ui/AppButton.vue'
+import AppCard from '@/components/ui/AppCard.vue'
 import { useLanguage } from '@/composables/useLanguage'
 
 const { t } = useLanguage()
@@ -21,9 +23,9 @@ const features = computed(() => [
           {{ t('home.subtitle') }}
         </p>
         <div class="hero-action">
-          <router-link to="/browse/events" class="btn-primary">
+          <AppButton variant="primary" to="/browse/events">
             {{ t('home.discoverBtn') }}
-          </router-link>
+          </AppButton>
         </div>
       </div>
     </section>
@@ -35,13 +37,13 @@ const features = computed(() => [
       </div>
 
       <div class="features-grid">
-        <div class="feature-card" v-for="feature in features" :key="feature.title">
+        <AppCard class="feature-card" v-for="feature in features" :key="feature.title">
           <div class="feature-icon">
             <component :is="feature.icon" :size="48" :stroke-width="1.5" />
           </div>
           <h3>{{ feature.title }}</h3>
           <p>{{ feature.desc }}</p>
-        </div>
+        </AppCard>
       </div>
     </section>
 
@@ -82,7 +84,6 @@ const features = computed(() => [
 }
 
 .hero-section {
-  /* THE FOLD: tinggi hero dijaga agar CTA utama selalu berada di area Above the Fold */
   min-height: 65vh;
   display: flex;
   align-items: center;
@@ -97,13 +98,11 @@ const features = computed(() => [
 
 .hero-content {
   max-width: 800px;
-  /* Z-PATTERN: elemen bertingkat rata tengah (judul -> subjudul -> CTA) */
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* SCALE: ukuran font terbesar menetapkan Ranked Importance tertinggi */
 .hero-title {
   font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 800;
@@ -117,27 +116,6 @@ const features = computed(() => [
   color: var(--text-muted);
   margin-bottom: var(--space-8);
   max-width: 600px;
-}
-
-.btn-primary {
-  display: inline-block;
-  background-color: var(--primary);
-  color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-decoration: none;
-  padding: var(--space-3) var(--space-8);
-  border-radius: 12px;
-  transition:
-    transform 0.2s,
-    background-color 0.2s;
-  /* FOCAL POINT: bayangan berwarna membuat tombol lolos Squint Test */
-  box-shadow: 0 8px 20px rgba(102, 68, 255, 0.3);
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-2px);
 }
 
 .features-section {
@@ -161,26 +139,14 @@ const features = computed(() => [
 }
 
 .features-grid {
-  /* GRID SYSTEM: membagi fitur menjadi kolom rata sejajar */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-8);
 }
 
 .feature-card {
-  background: var(--bg-light);
   padding: var(--space-8);
-  border-radius: var(--space-4);
-  border: 1px solid var(--border-color);
   text-align: center;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
 }
 
 .feature-icon {

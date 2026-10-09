@@ -38,34 +38,33 @@ const { t } = useLanguage()
 
 .about-header {
   text-align: center;
-  margin-bottom: 4rem;
-  padding: 4rem 2rem;
+  margin-bottom: 2rem;
+  padding: 2rem 1rem;
   background: #fdfdfd;
   border-radius: 20px;
   border: 1px solid #f0f0f0;
 }
 
 .about-header h1 {
-  font-size: 3rem;
+  font-size: clamp(2rem, 7vw, 3rem);
   color: #1c1948;
   margin-bottom: 1rem;
 }
 
 .about-header p {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   color: #666;
 }
 
 .about-content {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
-  padding: 0 1rem;
+  gap: 2rem;
 }
 
 .text-block h2 {
   color: #1c1948;
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 4.5vw, 1.8rem);
   margin-bottom: 1.2rem;
   display: flex;
   align-items: center;
@@ -84,7 +83,24 @@ const { t } = useLanguage()
 .text-block p {
   color: #555;
   line-height: 1.8;
-  font-size: 1.1rem;
+  font-size: 1rem;
+}
+
+@media (min-width: 769px) {
+  .about-header {
+    margin-bottom: 4rem;
+    padding: 4rem 2rem;
+  }
+  .about-header p {
+    font-size: 1.2rem;
+  }
+  .about-content {
+    gap: 3rem;
+    padding: 0 1rem;
+  }
+  .text-block p {
+    font-size: 1.1rem;
+  }
 }
 
 @keyframes fadeIn {

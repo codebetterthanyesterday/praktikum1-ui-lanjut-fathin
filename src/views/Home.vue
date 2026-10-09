@@ -85,6 +85,7 @@ const features = computed(() => [
 
 .hero-section {
   min-height: 65vh;
+  min-height: 65svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,8 +93,8 @@ const features = computed(() => [
   background: var(--bg-light);
   border-radius: var(--space-6);
   border: 1px solid var(--border-color);
-  padding: var(--space-12) var(--space-6);
-  margin-bottom: var(--space-12);
+  padding: var(--space-8) var(--space-4);
+  margin-bottom: var(--space-8);
 }
 
 .hero-content {
@@ -112,7 +113,7 @@ const features = computed(() => [
 }
 
 .hero-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: var(--text-muted);
   margin-bottom: var(--space-8);
   max-width: 600px;
@@ -128,24 +129,24 @@ const features = computed(() => [
 }
 
 .features-header h2 {
-  font-size: 2.2rem;
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
   color: var(--text-main);
   margin-bottom: var(--space-2);
 }
 
 .features-header p {
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--space-8);
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: var(--space-4);
 }
 
 .feature-card {
-  padding: var(--space-8);
+  padding: var(--space-6);
   text-align: center;
 }
 
@@ -168,7 +169,7 @@ const features = computed(() => [
 }
 
 .sitemap-visual {
-  padding: var(--space-12);
+  padding: var(--space-6) var(--space-4);
   background: var(--bg-gray);
   border-radius: var(--space-4);
   border: 1px solid var(--border-color);
@@ -205,7 +206,7 @@ const features = computed(() => [
   text-decoration: none;
   color: #444;
   font-weight: 500;
-  padding: var(--space-2) var(--space-4);
+  padding: 9px var(--space-4);
   border-radius: var(--space-2);
   display: inline-block;
   transition: all 0.2s;
@@ -222,12 +223,28 @@ const features = computed(() => [
   border-color: var(--primary);
 }
 
-@media (max-width: 768px) {
+@media (min-width: 769px) {
+  .hero-section {
+    padding: var(--space-12) var(--space-6);
+    margin-bottom: var(--space-12);
+  }
   .hero-subtitle {
+    font-size: 1.25rem;
+  }
+  .features-header p {
     font-size: 1.1rem;
   }
+  .features-grid {
+    gap: var(--space-8);
+  }
+  .feature-card {
+    padding: var(--space-8);
+  }
   .sitemap-visual {
-    padding: var(--space-6);
+    padding: var(--space-12);
+  }
+  .tree a {
+    padding: var(--space-2) var(--space-4);
   }
 }
 

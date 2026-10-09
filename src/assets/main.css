@@ -33,11 +33,18 @@
   --text-white: #ffffff;
 
   --container-max: 1440px;
-  --navbar-height: 100px;
+  --navbar-height: 72px;
+}
+
+@media (min-width: 1025px) {
+  :root {
+    --navbar-height: 100px;
+  }
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -47,6 +54,7 @@ body {
   line-height: 1.5;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
@@ -61,4 +69,16 @@ button {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: var(--space-6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

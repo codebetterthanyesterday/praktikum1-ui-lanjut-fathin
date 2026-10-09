@@ -22,20 +22,29 @@ const { t } = useLanguage()
 }
 
 .browse-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #eee;
 }
 
 .browse-header h1 {
-  font-size: 2.5rem;
+  font-size: clamp(1.75rem, 6vw, 2.5rem);
   color: #1c1948;
   margin-bottom: 0.5rem;
 }
 
 .browse-header p {
   color: #666;
-  font-size: 1.1rem;
+  font-size: 1rem;
+}
+
+@media (min-width: 769px) {
+  .browse-header {
+    margin-bottom: 2rem;
+  }
+  .browse-header p {
+    font-size: 1.1rem;
+  }
 }
 
 @keyframes fadeIn {

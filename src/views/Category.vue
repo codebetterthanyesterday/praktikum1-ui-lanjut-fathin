@@ -32,20 +32,20 @@ const categories = computed(() => [
 
 <style scoped>
 .section-title {
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 4.5vw, 1.8rem);
   color: #1c1948;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .category-card {
   background: white;
-  padding: 2rem;
+  padding: 1.25rem 0.75rem;
   border-radius: 16px;
   text-align: center;
   border: 1px solid #eee;
@@ -53,10 +53,12 @@ const categories = computed(() => [
   cursor: pointer;
 }
 
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  border-color: #6644ff;
+@media (hover: hover) {
+  .category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border-color: #6644ff;
+  }
 }
 
 .cat-icon {
@@ -66,12 +68,28 @@ const categories = computed(() => [
 
 .category-card h3 {
   color: #1c1948;
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin-bottom: 0.5rem;
 }
 
 .category-card p {
   color: #888;
   font-size: 0.9rem;
+}
+
+@media (min-width: 769px) {
+  .section-title {
+    margin-bottom: 2rem;
+  }
+  .category-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+  .category-card {
+    padding: 2rem;
+  }
+  .category-card h3 {
+    font-size: 1.1rem;
+  }
 }
 </style>

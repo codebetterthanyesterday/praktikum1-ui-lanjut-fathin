@@ -11,6 +11,7 @@ Butuh Node.js versi 22 ke atas.
 ```sh
 npm install
 npm run dev
+
 ```
 
 Buka `http://localhost:5173`. Kalau mau build: `npm run build`.
@@ -45,6 +46,12 @@ Bahasa bisa diganti EN/ID lewat tombol di navbar.
 - `EventCard` terima data lewat props, klik tombolnya emit `view-detail` ke `EventList`
 - `SearchBar` dan `CategoryFilter` pakai `v-model`
 - kalau hasil pencarian kosong muncul empty state
+
+**Tambahan** - CSS dirombak jadi mobile-first (style dasar buat hp, `min-width` buat layar lebih besar):
+
+- dashboard di hp pakai tab bar di bawah, tabelnya ditumpuk jadi list
+- di detail event tombol daftar nempel di bawah layar
+- tombol dan link dibesarin area sentuhnya (minimal 44px)
 
 ## Struktur folder
 

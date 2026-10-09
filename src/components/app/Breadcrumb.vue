@@ -78,10 +78,7 @@ const breadcrumbs = computed(() => {
 
 <style scoped>
 .breadcrumb {
-  margin-bottom: 2rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  margin-bottom: var(--space-2);
 }
 .breadcrumb ul {
   list-style: none;
@@ -90,6 +87,23 @@ const breadcrumbs = computed(() => {
   margin: 0;
   align-items: center;
   gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.breadcrumb ul::-webkit-scrollbar {
+  display: none;
+}
+.breadcrumb li {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.breadcrumb a,
+.active-crumb {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .breadcrumb a {
   text-decoration: none;
@@ -107,9 +121,11 @@ const breadcrumbs = computed(() => {
   color: #333;
   font-weight: 600;
 }
-@media (prefers-color-scheme: dark) {
-  .active-crumb {
-    color: #ccc;
+
+@media (min-width: 769px) {
+  .breadcrumb {
+    margin-bottom: 2rem;
+    padding: 6px 1rem;
   }
 }
 </style>

@@ -28,11 +28,17 @@ defineEmits(['update:modelValue'])
 </template>
 
 <style scoped>
+/* di hp digeser ke samping, ga turun baris */
 .category-filter {
   display: flex;
   gap: var(--space-2);
-  flex-wrap: wrap;
-  margin-bottom: var(--space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: -4px calc(-1 * var(--space-4)) calc(var(--space-6) - 4px);
+  padding: 4px var(--space-4);
+}
+.category-filter::-webkit-scrollbar {
+  display: none;
 }
 
 .filter-btn {
@@ -40,6 +46,9 @@ defineEmits(['update:modelValue'])
   border: 1px solid var(--border-color);
   padding: var(--space-2) var(--space-4);
   border-radius: 50px;
+  min-height: 44px;
+  flex-shrink: 0;
+  white-space: nowrap;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
@@ -61,5 +70,17 @@ defineEmits(['update:modelValue'])
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+}
+
+@media (min-width: 769px) {
+  .category-filter {
+    flex-wrap: wrap;
+    overflow: visible;
+    margin: 0 0 var(--space-6);
+    padding: 0;
+  }
+  .filter-btn {
+    min-height: 0;
+  }
 }
 </style>

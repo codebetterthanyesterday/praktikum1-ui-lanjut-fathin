@@ -27,14 +27,14 @@ const { t } = useLanguage()
           <div class="info-icon"><Phone :size="28" :stroke-width="1.5" color="#6644ff" /></div>
           <div>
             <h3>{{ t('contact.phone') }}</h3>
-            <p>+62 812 3456 7890</p>
+            <p><a href="tel:+6281234567890">+62 812 3456 7890</a></p>
           </div>
         </div>
         <div class="info-item">
           <div class="info-icon"><Mail :size="28" :stroke-width="1.5" color="#6644ff" /></div>
           <div>
             <h3>{{ t('contact.email') }}</h3>
-            <p>hello@gatherly.com</p>
+            <p><a href="mailto:hello@gatherly.com">hello@gatherly.com</a></p>
           </div>
         </div>
       </div>
@@ -42,16 +42,34 @@ const { t } = useLanguage()
       <div class="contact-form">
         <form @submit.prevent>
           <div class="form-group">
-            <label>{{ t('contact.nameLabel') }}</label>
-            <input type="text" :placeholder="t('contact.namePlaceholder')" class="form-control" />
+            <label for="contact-name">{{ t('contact.nameLabel') }}</label>
+            <input
+              id="contact-name"
+              type="text"
+              autocomplete="name"
+              :placeholder="t('contact.namePlaceholder')"
+              class="form-control"
+            />
           </div>
           <div class="form-group">
-            <label>{{ t('contact.emailLabel') }}</label>
-            <input type="email" :placeholder="t('contact.emailPlaceholder')" class="form-control" />
+            <label for="contact-email">{{ t('contact.emailLabel') }}</label>
+            <input
+              id="contact-email"
+              type="email"
+              autocomplete="email"
+              inputmode="email"
+              :placeholder="t('contact.emailPlaceholder')"
+              class="form-control"
+            />
           </div>
           <div class="form-group">
-            <label>{{ t('contact.messageLabel') }}</label>
-            <textarea :placeholder="t('contact.messagePlaceholder')" rows="5" class="form-control"></textarea>
+            <label for="contact-message">{{ t('contact.messageLabel') }}</label>
+            <textarea
+              id="contact-message"
+              :placeholder="t('contact.messagePlaceholder')"
+              rows="5"
+              class="form-control"
+            ></textarea>
           </div>
           <button class="btn-submit">{{ t('contact.sendBtn') }}</button>
         </form>
@@ -67,23 +85,24 @@ const { t } = useLanguage()
 
 .contact-header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 }
 
 .contact-header h1 {
-  font-size: 2.8rem;
+  font-size: clamp(2rem, 7vw, 2.8rem);
   color: #1c1948;
   margin-bottom: 1rem;
 }
 
 .contact-header p {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #666;
 }
 
 .contact-content {
   display: flex;
-  gap: 4rem;
+  flex-direction: column;
+  gap: 2rem;
   max-width: 1000px;
   margin: 0 auto;
 }
@@ -120,10 +139,17 @@ const { t } = useLanguage()
   line-height: 1.5;
 }
 
+.info-item a {
+  display: inline-block;
+  padding: 10px 0;
+  margin: -10px 0;
+  text-decoration: none;
+}
+
 .contact-form {
   flex: 1.5;
   background: white;
-  padding: 2.5rem;
+  padding: 1.5rem 1rem;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid #eee;
@@ -172,9 +198,19 @@ const { t } = useLanguage()
   background: #5533ee;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 769px) {
+  .contact-header {
+    margin-bottom: 4rem;
+  }
+  .contact-header p {
+    font-size: 1.1rem;
+  }
   .contact-content {
-    flex-direction: column;
+    flex-direction: row;
+    gap: 4rem;
+  }
+  .contact-form {
+    padding: 2.5rem;
   }
 }
 

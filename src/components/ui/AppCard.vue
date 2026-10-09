@@ -29,8 +29,10 @@ defineProps({
   overflow: hidden;
 }
 
-.app-card.is-hoverable:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
+@media (hover: hover) {
+  .app-card.is-hoverable:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
+  }
 }
 </style>

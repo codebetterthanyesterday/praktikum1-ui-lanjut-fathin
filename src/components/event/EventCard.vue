@@ -43,7 +43,7 @@ const { locale, t, formatDate } = useLanguage()
 }
 
 .event-body {
-  padding: var(--space-6);
+  padding: var(--space-4) var(--space-4) var(--space-2);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -76,7 +76,7 @@ const { locale, t, formatDate } = useLanguage()
 .event-title {
   color: var(--text-main);
   margin-bottom: var(--space-2);
-  font-size: 1.4rem;
+  font-size: 1.25rem;
 }
 
 .event-loc {
@@ -97,16 +97,19 @@ const { locale, t, formatDate } = useLanguage()
   color: var(--text-muted);
   line-height: 1.6;
   font-size: 0.95rem;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
   flex-grow: 1;
 }
 
 .card-footer {
   border-top: 1px solid var(--border-color);
-  padding-top: var(--space-4);
+  padding-top: var(--space-1);
 }
 
 .btn-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   background: none;
   border: none;
   cursor: pointer;
@@ -119,5 +122,24 @@ const { locale, t, formatDate } = useLanguage()
 
 .btn-link:hover {
   color: var(--primary);
+}
+
+@media (min-width: 769px) {
+  .event-body {
+    padding: var(--space-6);
+  }
+  .event-title {
+    font-size: 1.4rem;
+  }
+  .event-desc {
+    margin-bottom: var(--space-6);
+  }
+  .card-footer {
+    padding-top: var(--space-4);
+  }
+  .btn-link {
+    display: inline-block;
+    min-height: 0;
+  }
 }
 </style>

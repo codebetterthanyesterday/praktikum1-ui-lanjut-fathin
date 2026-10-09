@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLanguage } from '@/composables/useLanguage'
 
@@ -35,12 +35,31 @@ const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
 }
 
+const closeOnEscape = (e) => {
+  if (e.key === 'Escape') isMobileMenuOpen.value = false
+}
+
+watch(
+  () => route.fullPath,
+  () => {
+    isMobileMenuOpen.value = false
+  },
+)
+
+// halaman di belakang menu jangan ikut ke-scroll
+watch(isMobileMenuOpen, (open) => {
+  document.body.style.overflow = open ? 'hidden' : ''
+})
+
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('keydown', closeOnEscape)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('keydown', closeOnEscape)
+  document.body.style.overflow = ''
 })
 </script>
 
@@ -128,7 +147,13 @@ onUnmounted(() => {
       </ul>
 
       <div class="nav-right">
-        <div class="lang-selector" @click="toggleLocale" title="Switch Language">
+        <button
+          type="button"
+          class="lang-selector"
+          @click="toggleLocale"
+          title="Switch Language"
+          aria-label="Switch Language"
+        >
           <svg
             width="20"
             height="20"
@@ -146,9 +171,16 @@ onUnmounted(() => {
             ></path>
           </svg>
           <span class="lang-text">{{ locale }}</span>
-        </div>
+        </button>
 
-        <button class="hamburger-btn" @click="toggleMobileMenu">
+        <button
+          type="button"
+          class="hamburger-btn"
+          aria-label="Menu"
+          aria-controls="mobile-menu"
+          :aria-expanded="isMobileMenuOpen"
+          @click="toggleMobileMenu"
+        >
           <svg
             v-if="!isMobileMenuOpen"
             width="24"
@@ -182,7 +214,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div class="mobile-menu" :class="{ 'is-open': isMobileMenuOpen }">
+    <div id="mobile-menu" class="mobile-menu" :class="{ 'is-open': isMobileMenuOpen }">
       <ul class="mobile-nav-menu">
         <li class="mobile-nav-item" v-for="menu in menus" :key="menu.name">
           <router-link
@@ -249,7 +281,7 @@ onUnmounted(() => {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0.85rem 2rem;
+  padding: 0.85rem var(--space-4);
 }
 
 .navbar.scrolled {
@@ -265,6 +297,7 @@ onUnmounted(() => {
   gap: 0.75rem;
   text-decoration: none;
   color: var(--text-white, #fff);
+  min-height: 44px;
   padding-right: 2rem;
   transition: transform 0.3s ease;
 }
@@ -284,9 +317,9 @@ onUnmounted(() => {
 }
 
 .nav-menu {
-  display: flex;
+  display: none;
   align-items: center;
-  gap: 2.5rem;
+  gap: 1rem;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -417,7 +450,7 @@ onUnmounted(() => {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.75rem;
 }
 .lang-selector {
   display: flex;
@@ -426,8 +459,14 @@ onUnmounted(() => {
   color: var(--text-white, #fff);
   font-size: 0.9rem;
   font-weight: 600;
+  line-height: 1.5;
   cursor: pointer;
-  padding: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
   border-radius: 8px;
   transition: all 0.3s ease;
 }
@@ -460,40 +499,14 @@ onUnmounted(() => {
   transform: scale(1.05);
 }
 
-@media (max-width: 1200px) {
-  .nav-menu {
-    gap: 1rem;
-  }
-}
-@media (max-width: 1024px) {
-  .nav-menu {
-    display: none;
-  }
-  .nav-right {
-    gap: 0.75rem;
-  }
-  .lang-selector {
-    padding: 0.25rem 0.5rem;
-  }
-  .hamburger-btn {
-    display: flex;
-  }
-}
-@media (min-width: 1025px) {
-  .hamburger-btn {
-    display: none;
-  }
-  .mobile-menu {
-    display: none !important;
-  }
-}
-
 .mobile-menu {
   position: absolute;
   top: 100%;
   left: 0;
   width: 100%;
   height: calc(100vh - 70px);
+  height: calc(100dvh - 100%);
+  overscroll-behavior: contain;
   background: rgba(15, 12, 41, 0.98);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -512,7 +525,7 @@ onUnmounted(() => {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
-  padding: 2.5rem 2rem 5rem;
+  padding: 1.5rem var(--space-4) 4rem;
 }
 
 .mobile-nav-menu {
@@ -521,7 +534,7 @@ onUnmounted(() => {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.25rem;
 }
 
 .mobile-nav-item {
@@ -562,6 +575,7 @@ onUnmounted(() => {
   letter-spacing: -0.02em;
   display: flex;
   align-items: center;
+  min-height: 44px;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -584,11 +598,11 @@ onUnmounted(() => {
 
 .mobile-submenu {
   list-style: none;
-  padding-left: 2rem;
-  margin-top: 1.25rem;
+  padding-left: 1.5rem;
+  margin-top: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.5rem;
   border-left: 2px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -607,10 +621,10 @@ onUnmounted(() => {
 .mobile-sub-submenu {
   list-style: none;
   padding-left: 1.5rem;
-  margin-top: 1rem;
+  margin-top: 0.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.25rem;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -624,5 +638,33 @@ onUnmounted(() => {
 .mobile-sub-sublink.active {
   color: #fff;
   transform: translateX(6px);
+}
+
+@media (min-width: 769px) {
+  .navbar-container {
+    padding: 0.85rem 2rem;
+  }
+}
+@media (min-width: 1025px) {
+  .nav-menu {
+    display: flex;
+  }
+  .nav-right {
+    gap: 1.5rem;
+  }
+  .lang-selector {
+    min-width: 0;
+    min-height: 0;
+    padding: 0.5rem;
+  }
+  .hamburger-btn,
+  .mobile-menu {
+    display: none;
+  }
+}
+@media (min-width: 1201px) {
+  .nav-menu {
+    gap: 2.5rem;
+  }
 }
 </style>

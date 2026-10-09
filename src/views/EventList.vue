@@ -65,18 +65,18 @@ const handleViewDetail = (id) => {
 
 <style scoped>
 .header-section {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
 }
 
 .section-title {
-  font-size: 2.2rem;
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
   color: var(--text-main);
   margin-bottom: var(--space-2);
 }
 
 .section-desc {
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .filters-section {
@@ -87,15 +87,30 @@ const handleViewDetail = (id) => {
 .event-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
-  gap: var(--space-6);
+  gap: var(--space-4);
 }
 
 .empty-state {
   text-align: center;
-  padding: var(--space-12);
+  padding: var(--space-8) var(--space-4);
   color: var(--text-muted);
   background: var(--bg-light);
   border: 1px solid var(--border-color);
   border-radius: var(--space-4);
+}
+
+@media (min-width: 769px) {
+  .header-section {
+    margin-bottom: var(--space-8);
+  }
+  .section-desc {
+    font-size: 1.1rem;
+  }
+  .event-grid {
+    gap: var(--space-6);
+  }
+  .empty-state {
+    padding: var(--space-12);
+  }
 }
 </style>

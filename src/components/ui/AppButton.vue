@@ -48,8 +48,10 @@ defineEmits(['click'])
     background-color 0.2s;
 }
 
-.app-button:hover {
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .app-button:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .app-button:focus-visible {

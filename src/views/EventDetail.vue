@@ -78,14 +78,22 @@ const agenda = [
 </template>
 
 <style scoped>
+/* ruang kosong di bawah buat bar daftar yang nempel */
+.event-detail-page {
+  padding-bottom: 140px;
+}
+
 .btn-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   background: none;
   border: none;
   color: var(--text-muted);
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-2);
   transition: color 0.2s;
 }
 .btn-back:hover {
@@ -96,7 +104,7 @@ const agenda = [
   background: var(--bg-light);
   border-radius: var(--space-4);
   border: 1px solid var(--border-color);
-  padding: var(--space-12) var(--space-8);
+  padding: var(--space-6) var(--space-4);
   margin-bottom: var(--space-8);
 }
 
@@ -113,7 +121,7 @@ const agenda = [
 
 .detail-header h1 {
   color: var(--text-main);
-  font-size: 2.8rem;
+  font-size: clamp(1.75rem, 6vw, 2.8rem);
   margin-bottom: var(--space-4);
   line-height: 1.2;
 }
@@ -130,7 +138,7 @@ const agenda = [
   gap: var(--space-2);
   color: var(--text-muted);
   font-weight: 500;
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .meta-icon {
@@ -144,14 +152,14 @@ const agenda = [
 
 .grid-asymmetric {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: var(--space-12);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
 }
 
 .main-desc h2 {
   color: var(--text-main);
   margin-bottom: var(--space-4);
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 4.5vw, 1.8rem);
   border-left: 4px solid var(--primary);
   padding-left: var(--space-2);
 }
@@ -160,7 +168,7 @@ const agenda = [
   color: var(--text-muted);
   line-height: 1.8;
   margin-bottom: var(--space-6);
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .agenda-list {
@@ -172,22 +180,36 @@ const agenda = [
   padding: var(--space-3) 0;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-muted);
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .agenda-list strong {
   color: var(--text-main);
 }
 
-.ticket-card {
-  padding: var(--space-8);
-  text-align: center;
+/* di hp kartu tiket jadi bar di bawah layar, jadi tombol daftar selalu kelihatan */
+.sidebar {
+  position: fixed;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  max-width: 520px;
+  margin: 0 auto;
+  z-index: 50;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.18));
 }
 
-/* sidebar jangan dikasih align-items: start, nanti sticky-nya ga jalan */
-.sticky-pane {
-  position: sticky;
-  top: calc(var(--navbar-height) + var(--space-6));
+.ticket-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.ticket-card h3,
+.ticket-desc {
+  display: none;
 }
 
 .ticket-card h3 {
@@ -197,10 +219,11 @@ const agenda = [
 }
 
 .price {
-  font-size: 2.8rem;
+  grid-area: 1 / 1;
+  font-size: 1.5rem;
+  line-height: 1.2;
   font-weight: 800;
   color: var(--primary);
-  margin-bottom: var(--space-2);
 }
 
 .ticket-desc {
@@ -209,29 +232,68 @@ const agenda = [
 }
 
 .btn-register {
+  grid-area: 2 / 1 / 3 / -1;
   width: 100%;
 }
 
 .spots {
-  margin-top: var(--space-4);
+  grid-area: 1 / 2;
+  text-align: right;
   color: var(--danger);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
-@media (max-width: 900px) {
-  .grid-asymmetric {
-    grid-template-columns: 1fr;
-    gap: var(--space-8);
+@media (min-width: 901px) {
+  .event-detail-page {
+    padding-bottom: 0;
   }
-  .sticky-pane {
-    position: static;
+  .btn-back {
+    display: inline-block;
+    min-height: 0;
+    margin-bottom: var(--space-6);
   }
   .detail-header {
-    padding: var(--space-8) var(--space-6);
+    padding: var(--space-12) var(--space-8);
   }
-  .detail-header h1 {
-    font-size: 2.2rem;
+  .meta-item,
+  .main-desc p,
+  .agenda-list li {
+    font-size: 1.05rem;
+  }
+  .grid-asymmetric {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--space-12);
+  }
+
+  .sidebar {
+    position: static;
+    max-width: none;
+    filter: none;
+  }
+  .ticket-card {
+    display: block;
+    padding: var(--space-8);
+    text-align: center;
+  }
+  .ticket-card h3,
+  .ticket-desc {
+    display: block;
+  }
+  /* sidebar jangan dikasih align-items: start, nanti sticky-nya ga jalan */
+  .sticky-pane {
+    position: sticky;
+    top: calc(var(--navbar-height) + var(--space-6));
+  }
+  .price {
+    font-size: 2.8rem;
+    line-height: inherit;
+    margin-bottom: var(--space-2);
+  }
+  .spots {
+    margin-top: var(--space-4);
+    text-align: center;
+    font-size: 0.95rem;
   }
 }
 </style>

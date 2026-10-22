@@ -1,9 +1,13 @@
 <script setup>
-import { RouterView, RouterLink } from 'vue-router'
-import { LayoutDashboard, CalendarDays, Users, QrCode, ArrowLeft } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { RouterView, RouterLink, useRoute } from 'vue-router'
+import { LayoutDashboard, CalendarDays, ArrowLeft } from 'lucide-vue-next'
 import { useLanguage } from '@/composables/useLanguage'
 
+const route = useRoute()
 const { t } = useLanguage()
+
+const pageTitle = computed(() => t(route.meta.titleKey || 'dashboard.title'))
 </script>
 
 <template>
@@ -17,18 +21,11 @@ const { t } = useLanguage()
           <LayoutDashboard :size="20" class="rail-icon" />
           <span>{{ t('dashboard.overview') }}</span>
         </RouterLink>
-        <a href="#" class="rail-link" @click.prevent>
+        <!-- exact-active di atas biar menu Dashboard ga ikut nyala waktu buka /dashboard/events -->
+        <RouterLink to="/dashboard/events" class="rail-link" active-class="active">
           <CalendarDays :size="20" class="rail-icon" />
-          <span>{{ t('dashboard.myEvents') }}</span>
-        </a>
-        <a href="#" class="rail-link" @click.prevent>
-          <Users :size="20" class="rail-icon" />
-          <span>{{ t('dashboard.attendees') }}</span>
-        </a>
-        <a href="#" class="rail-link" @click.prevent>
-          <QrCode :size="20" class="rail-icon" />
-          <span>{{ t('dashboard.checkin') }}</span>
-        </a>
+          <span>{{ t('dashboard.management') }}</span>
+        </RouterLink>
       </nav>
       <div class="rail-footer">
         <RouterLink to="/" class="rail-link">&larr; {{ t('dashboard.back') }}</RouterLink>
@@ -40,7 +37,7 @@ const { t } = useLanguage()
         <RouterLink to="/" class="back-link" :aria-label="t('dashboard.back')">
           <ArrowLeft :size="22" />
         </RouterLink>
-        <h1>{{ t('dashboard.title') }}</h1>
+        <h1>{{ pageTitle }}</h1>
         <div class="user-profile">{{ t('dashboard.admin') }}</div>
       </header>
       <div class="pane-content">

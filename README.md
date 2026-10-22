@@ -24,7 +24,8 @@ Buka `http://localhost:5173`. Kalau mau build: `npm run build`.
 - `/browse/events/:id` detail event
 - `/browse/category`
 - `/contact`
-- `/dashboard` dashboard organizer
+- `/dashboard` dashboard organizer (pemantauan)
+- `/dashboard/events` kelola acara (tambah, selesaikan, hapus)
 
 Bahasa bisa diganti EN/ID lewat tombol di navbar.
 
@@ -53,6 +54,14 @@ Bahasa bisa diganti EN/ID lewat tombol di navbar.
 - di detail event tombol daftar nempel di bawah layar
 - tombol dan link dibesarin area sentuhnya (minimal 44px)
 
+**Modul 4** - manajemen state dan interaksi:
+
+- data acara dipusatkan di `useEvents.js` (single source of truth), mulai dari kosong dan disimpan ke localStorage pakai `watch` deep
+- total/aktif/selesai dihitung pakai `computed`
+- halaman Kelola Acara punya 3 tab: acara aktif, form buat acara (ada validasi), dan arsip acara selesai
+- selesaikan & hapus acara harus konfirmasi dulu lewat `AppModal` (backdrop blur)
+- katalog publik cuma nampilin acara aktif, detail acara diambil dari id di URL, kalau ga ketemu muncul 404
+
 ## Struktur folder
 
 ```text
@@ -60,10 +69,9 @@ src/
 ├── assets/         main.css
 ├── components/
 │   ├── app/        Navbar, Breadcrumb
-│   ├── ui/         AppCard, AppButton
+│   ├── ui/         AppCard, AppButton, AppModal
 │   └── event/      EventCard, SearchBar, CategoryFilter
-├── composables/    useLanguage.js (ganti bahasa)
-├── data/           events.js (data dummy event)
+├── composables/    useLanguage.js (ganti bahasa), useEvents.js (data acara)
 ├── layouts/        App.vue, DashboardLayout.vue
 ├── router/         index.js
 └── views/          halaman-halamannya

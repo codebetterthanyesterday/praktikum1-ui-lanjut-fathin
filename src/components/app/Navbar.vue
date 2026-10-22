@@ -2,11 +2,17 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLanguage } from '@/composables/useLanguage'
+import { useEvents } from '@/composables/useEvents'
 
 const isScrolled = ref(false)
 const isMobileMenuOpen = ref(false)
 const route = useRoute()
 const { locale, toggleLocale, t } = useLanguage()
+const { activeEvents } = useEvents()
+
+const sampleEventPath = computed(() =>
+  activeEvents.value.length ? `/browse/events/${activeEvents.value[0].id}` : '/browse/events',
+)
 
 const menus = computed(() => [
   { name: t('nav.home'), path: '/' },
@@ -18,7 +24,7 @@ const menus = computed(() => [
       {
         name: t('nav.eventList'),
         path: '/browse/events',
-        children: [{ name: t('nav.eventDetail'), path: '/browse/events/1' }],
+        children: [{ name: t('nav.eventDetail'), path: sampleEventPath.value }],
       },
       { name: t('nav.category'), path: '/browse/category' },
     ],

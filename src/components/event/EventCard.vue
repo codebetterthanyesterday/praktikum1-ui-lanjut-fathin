@@ -11,20 +11,20 @@ defineProps({
 })
 defineEmits(['view-detail'])
 
-const { locale, t, formatDate } = useLanguage()
+const { t, formatDateTime } = useLanguage()
 </script>
 
 <template>
   <AppCard as="article" class="event-card-wrapper">
     <div class="event-body">
       <div class="event-meta">
-        <span class="event-date">{{ formatDate(event.date) }}</span>
+        <span class="event-date">{{ formatDateTime(event.date) }}</span>
         <span class="event-category">{{ t(`events.categories.${event.cat}`) }}</span>
       </div>
 
       <h3 class="event-title">{{ event.title }}</h3>
       <p class="event-loc"><MapPin :size="16" class="inline-icon" /> {{ event.loc }}</p>
-      <p class="event-desc">{{ event.desc[locale] }}</p>
+      <p class="event-desc">{{ event.desc }}</p>
 
       <div class="card-footer">
         <button type="button" class="btn-link" @click="$emit('view-detail', event.id)">
@@ -53,6 +53,7 @@ const { locale, t, formatDate } = useLanguage()
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-2);
   margin-bottom: var(--space-4);
 }
 
@@ -77,6 +78,7 @@ const { locale, t, formatDate } = useLanguage()
   color: var(--text-main);
   margin-bottom: var(--space-2);
   font-size: 1.25rem;
+  overflow-wrap: anywhere;
 }
 
 .event-loc {
@@ -99,6 +101,11 @@ const { locale, t, formatDate } = useLanguage()
   font-size: 0.95rem;
   margin-bottom: var(--space-4);
   flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .card-footer {

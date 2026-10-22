@@ -4,8 +4,14 @@ import { Search, Ticket, ChartColumn } from 'lucide-vue-next'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppCard from '@/components/ui/AppCard.vue'
 import { useLanguage } from '@/composables/useLanguage'
+import { useEvents } from '@/composables/useEvents'
 
 const { t } = useLanguage()
+const { activeEvents } = useEvents()
+
+const sampleEventPath = computed(() =>
+  activeEvents.value.length ? `/browse/events/${activeEvents.value[0].id}` : '/browse/events',
+)
 
 const features = computed(() => [
   { icon: Search, title: t('home.discoverTitle'), desc: t('home.discoverDesc') },
@@ -63,14 +69,19 @@ const features = computed(() => [
                 <li>
                   <router-link to="/browse/events">Event List</router-link>
                   <ul>
-                    <li><router-link to="/browse/events/1">Event Detail (Example)</router-link></li>
+                    <li><router-link :to="sampleEventPath">Event Detail (Example)</router-link></li>
                   </ul>
                 </li>
                 <li><router-link to="/browse/category">Category</router-link></li>
               </ul>
             </li>
             <li><router-link to="/contact">Contact</router-link></li>
-            <li><router-link to="/dashboard">Organizer Dashboard</router-link></li>
+            <li>
+              <router-link to="/dashboard">Organizer Dashboard</router-link>
+              <ul>
+                <li><router-link to="/dashboard/events">Event Management</router-link></li>
+              </ul>
+            </li>
           </ul>
         </li>
       </ul>

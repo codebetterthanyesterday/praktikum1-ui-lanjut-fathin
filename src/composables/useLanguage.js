@@ -12,27 +12,78 @@ const translations = {
       eventDetail: 'Event Detail (Sample)',
       category: 'Category',
       contact: 'Contact',
-      dashboard: 'Organizer Dashboard'
+      dashboard: 'Organizer Dashboard',
+      eventManagement: 'Event Management'
     },
     dashboard: {
       brand: 'Gatherly Organizer',
       title: 'Dashboard',
       admin: 'Admin',
-      overview: 'Overview',
-      myEvents: 'My Events',
-      attendees: 'Attendees',
-      checkin: 'QR Check-in',
+      overview: 'Dashboard',
+      management: 'Event Management',
       back: 'Back to Public',
-      welcome: 'Welcome back, Organizer',
-      ticketsSold: 'Total Tickets Sold',
-      pageViews: 'Page Views',
-      revenue: 'Revenue',
-      recent: 'Recent Registrations',
-      colName: 'Attendee Name',
-      colEvent: 'Event',
-      colDate: 'Registration Date',
+      heading: 'Organizer Analytics & Overview',
+      subtitle: 'Monitor real-time statistics and track status across all managed events.',
+      manageBtn: 'Manage Events',
+      totalEvents: 'Total Events',
+      totalHint: 'All recorded events',
+      activeEvents: 'Active Events',
+      activeHint: 'Live in public catalog',
+      completedEvents: 'Completed Events',
+      completedHint: 'Archived completed events',
+      tableTitle: 'Recent Events Status Overview',
+      tableSubtitle: 'Master registry of all events managed across the Gatherly platform.',
+      openManagement: 'Open Event Management',
+      colTitle: 'Event Title',
+      colCategory: 'Category',
+      colDateLoc: 'Date & Location',
+      colQuota: 'Quota',
       colStatus: 'Status',
-      confirmed: 'Confirmed'
+      pax: '{n} Pax',
+      statusActive: 'Active',
+      statusCompleted: 'Completed',
+      tableEmpty: 'No events recorded in the system yet.',
+      createFirst: 'Create First Event'
+    },
+    manage: {
+      heading: 'Event Management Control',
+      subtitle: 'Manage event lifecycle, publish new events, and archive completed ones.',
+      createNew: 'Create New Event',
+      tabActive: 'Active Events ({n})',
+      tabCreate: 'Create Event',
+      tabCompleted: 'Completed Events ({n})',
+      viewDetails: 'View Details',
+      complete: 'Complete Event',
+      delete: 'Delete',
+      deleteArchive: 'Delete from Archive',
+      completedNotice: 'This event has ended and is archived from the public catalog.',
+      emptyActiveTitle: 'No Active Events',
+      emptyActiveDesc: 'All events have ended or none have been created yet. Please create a new event.',
+      emptyActiveBtn: 'Create Event Now',
+      emptyCompletedTitle: 'No Completed Events',
+      emptyCompletedDesc: 'Events marked as completed will be archived here permanently.',
+      formTitle: 'Create New Event Form',
+      formSubtitle: 'Information entered here will be instantly published to the Gatherly public catalog.',
+      fieldTitle: 'Event Title',
+      fieldTitlePh: 'e.g. Modern UI/UX Masterclass',
+      fieldCategory: 'Event Category',
+      fieldDate: 'Date & Time',
+      fieldLoc: 'Event Location',
+      fieldLocPh: 'e.g. Innovation Center, Jakarta',
+      fieldQuota: 'Attendee Quota',
+      fieldDesc: 'Event Description',
+      fieldDescPh: 'Describe the agenda, speakers, and key takeaways...',
+      cancel: 'Cancel',
+      publish: 'Publish Event Now',
+      errorRequired: 'Please fill in all required fields before publishing the event!',
+      errorQuota: 'Attendee quota must be at least 1.',
+      success: 'Event published successfully and is now live!',
+      modalCompleteTitle: 'Complete Event?',
+      modalCompleteMsg: "Are you sure you want to mark '{title}' as completed? Once completed, the status is final and the event will be automatically removed from public listings.",
+      modalCompleteBtn: 'Yes, Complete',
+      modalDeleteTitle: 'Delete Event Permanently?',
+      modalDeleteMsg: "Are you sure you want to permanently delete '{title}'? This action cannot be undone and will permanently remove this event from all records.",
+      modalDeleteBtn: 'Yes, Delete Permanently'
     },
     home: {
       title: 'Connect, Discover, and Experience',
@@ -70,6 +121,10 @@ const translations = {
       searchPlaceholder: 'Search events by title or location...',
       all: 'All',
       empty: 'No events found matching your criteria.',
+      resetFilter: 'Reset Filters',
+      emptyTitle: 'No Events Available Yet',
+      emptyDesc: 'There are currently no active events scheduled. Are you an organizer? Publish and manage your first event today through the Dashboard!',
+      emptyBtn: 'Go to Organizer Dashboard',
       categories: {
         workshop: 'Workshop',
         meetup: 'Meetup',
@@ -105,24 +160,21 @@ const translations = {
     eventDetail: {
       back: 'Back to Events',
       quota: 'Quota: {n} Attendees',
+      statusLive: 'Open Registration',
+      statusEnded: 'Event Finished',
       aboutTitle: 'About This Event',
-      aboutDesc1: 'Welcome to the biggest web interface development training event of the year! Gatherly is collaborating with the local developer community to host a comprehensive workshop designed specifically to bring together professionals, enthusiasts, and students.',
-      aboutDesc2: 'In this session, we will discuss various current industry challenges, dissect the implementation of Single Page Applications (SPA), and practice hands-on Layout System design prioritizing visual hierarchy. You will gain practical insights that can be directly applied to your future projects or career.',
-      agendaTitle: 'Event Agenda',
-      agenda: {
-        item1: 'Registration & QR Check-in Scanning',
-        item2: 'Session 1: Vue Router & Navigation Fundamentals',
-        item3: 'Coffee Break & Networking Session',
-        item4: 'Session 2: Layout System & Grid Implementation',
-        item5: 'Q&A & Closing Remarks'
-      },
       registration: 'Attendee Registration',
       free: 'Free',
-      ticketDesc: 'Secure your seat now before the quota is full.',
+      ticketDesc: 'Secure your ticket now before quota is filled.',
+      ticketDescEnded: 'Registration is closed as this event has ended.',
       registerBtn: 'Register Now',
-      spots: 'Only {n} seats left!',
-      notFoundTitle: 'Event not found',
-      notFoundDesc: 'The event you are looking for does not exist or has been removed.'
+      registeredBtn: 'Registered',
+      registeredNote: 'You are registered! See you at the event.',
+      closedBtn: 'Registration Closed',
+      spots: '{n} seats available',
+      notFoundTitle: '404 - Event Not Found',
+      notFoundDesc: 'The event you are looking for is unavailable or has been removed by the organizer.',
+      notFoundBtn: 'Back to Event Catalog'
     }
   },
   ID: {
@@ -134,27 +186,78 @@ const translations = {
       eventDetail: 'Detail Acara (Contoh)',
       category: 'Kategori',
       contact: 'Kontak',
-      dashboard: 'Dashboard Organizer'
+      dashboard: 'Dashboard Organizer',
+      eventManagement: 'Kelola Acara'
     },
     dashboard: {
       brand: 'Gatherly Organizer',
       title: 'Dashboard',
       admin: 'Admin',
-      overview: 'Ringkasan',
-      myEvents: 'Acara Saya',
-      attendees: 'Peserta',
-      checkin: 'QR Check-in',
+      overview: 'Dashboard',
+      management: 'Kelola Acara',
       back: 'Kembali ke Publik',
-      welcome: 'Selamat datang kembali, Organizer',
-      ticketsSold: 'Total Tiket Terjual',
-      pageViews: 'Tayangan Halaman',
-      revenue: 'Pendapatan',
-      recent: 'Pendaftaran Terbaru',
-      colName: 'Nama Peserta',
-      colEvent: 'Acara',
-      colDate: 'Tanggal Daftar',
+      heading: 'Analitik & Ringkasan Organizer',
+      subtitle: 'Pantau statistik secara langsung dan lacak status semua acara yang Anda kelola.',
+      manageBtn: 'Kelola Acara',
+      totalEvents: 'Total Acara',
+      totalHint: 'Semua acara yang tercatat',
+      activeEvents: 'Acara Aktif',
+      activeHint: 'Tampil di katalog publik',
+      completedEvents: 'Acara Selesai',
+      completedHint: 'Acara selesai yang diarsipkan',
+      tableTitle: 'Ringkasan Status Acara Terbaru',
+      tableSubtitle: 'Daftar induk semua acara yang dikelola di platform Gatherly.',
+      openManagement: 'Buka Kelola Acara',
+      colTitle: 'Judul Acara',
+      colCategory: 'Kategori',
+      colDateLoc: 'Tanggal & Lokasi',
+      colQuota: 'Kuota',
       colStatus: 'Status',
-      confirmed: 'Terkonfirmasi'
+      pax: '{n} Orang',
+      statusActive: 'Aktif',
+      statusCompleted: 'Selesai',
+      tableEmpty: 'Belum ada acara yang tercatat di sistem.',
+      createFirst: 'Buat Acara Pertama'
+    },
+    manage: {
+      heading: 'Pusat Kelola Acara',
+      subtitle: 'Kelola siklus hidup acara, terbitkan acara baru, dan arsipkan acara yang sudah selesai.',
+      createNew: 'Buat Acara Baru',
+      tabActive: 'Acara Aktif ({n})',
+      tabCreate: 'Buat Acara',
+      tabCompleted: 'Acara Selesai ({n})',
+      viewDetails: 'Lihat Detail',
+      complete: 'Selesaikan Acara',
+      delete: 'Hapus',
+      deleteArchive: 'Hapus dari Arsip',
+      completedNotice: 'Acara ini sudah berakhir dan diarsipkan dari katalog publik.',
+      emptyActiveTitle: 'Belum Ada Acara Aktif',
+      emptyActiveDesc: 'Semua acara sudah berakhir atau belum ada yang dibuat. Silakan buat acara baru.',
+      emptyActiveBtn: 'Buat Acara Sekarang',
+      emptyCompletedTitle: 'Belum Ada Acara Selesai',
+      emptyCompletedDesc: 'Acara yang ditandai selesai akan diarsipkan di sini secara permanen.',
+      formTitle: 'Formulir Acara Baru',
+      formSubtitle: 'Informasi yang diisi di sini akan langsung terbit di katalog publik Gatherly.',
+      fieldTitle: 'Judul Acara',
+      fieldTitlePh: 'mis. Modern UI/UX Masterclass',
+      fieldCategory: 'Kategori Acara',
+      fieldDate: 'Tanggal & Waktu',
+      fieldLoc: 'Lokasi Acara',
+      fieldLocPh: 'mis. Innovation Center, Jakarta',
+      fieldQuota: 'Kuota Peserta',
+      fieldDesc: 'Deskripsi Acara',
+      fieldDescPh: 'Jelaskan agenda, pembicara, dan hal yang akan didapat peserta...',
+      cancel: 'Batal',
+      publish: 'Terbitkan Acara',
+      errorRequired: 'Lengkapi semua kolom wajib sebelum menerbitkan acara!',
+      errorQuota: 'Kuota peserta minimal 1.',
+      success: 'Acara berhasil diterbitkan dan sudah tampil!',
+      modalCompleteTitle: 'Selesaikan Acara?',
+      modalCompleteMsg: "Yakin ingin menandai '{title}' sebagai selesai? Status ini permanen dan acara akan otomatis hilang dari katalog publik.",
+      modalCompleteBtn: 'Ya, Selesaikan',
+      modalDeleteTitle: 'Hapus Acara Permanen?',
+      modalDeleteMsg: "Yakin ingin menghapus '{title}' secara permanen? Tindakan ini tidak bisa dibatalkan dan acara akan hilang dari semua catatan.",
+      modalDeleteBtn: 'Ya, Hapus Permanen'
     },
     home: {
       title: 'Hubungkan, Temukan, dan Nikmati',
@@ -192,6 +295,10 @@ const translations = {
       searchPlaceholder: 'Cari acara berdasarkan judul atau lokasi...',
       all: 'Semua',
       empty: 'Tidak ada acara yang cocok dengan kriteria Anda.',
+      resetFilter: 'Reset Filter',
+      emptyTitle: 'Belum Ada Acara',
+      emptyDesc: 'Saat ini belum ada acara aktif yang dijadwalkan. Anda penyelenggara? Terbitkan dan kelola acara pertama Anda lewat Dashboard!',
+      emptyBtn: 'Buka Dashboard Organizer',
       categories: {
         workshop: 'Workshop',
         meetup: 'Meetup',
@@ -227,24 +334,21 @@ const translations = {
     eventDetail: {
       back: 'Kembali ke Acara',
       quota: 'Kuota: {n} Peserta',
+      statusLive: 'Pendaftaran Dibuka',
+      statusEnded: 'Acara Selesai',
       aboutTitle: 'Tentang Acara Ini',
-      aboutDesc1: 'Selamat datang di acara pelatihan pengembangan antarmuka web terbesar tahun ini! Gatherly berkolaborasi dengan komunitas developer lokal untuk menghadirkan workshop komprehensif yang dirancang khusus untuk mempertemukan profesional, pegiat, dan mahasiswa.',
-      aboutDesc2: 'Dalam sesi ini, kita akan membahas berbagai tantangan industri terkini, membedah implementasi Single Page Application (SPA), dan mempraktikkan langsung perancangan Layout System yang mengutamakan hierarki visual. Anda akan memperoleh wawasan praktis yang dapat langsung diterapkan pada proyek atau karier Anda.',
-      agendaTitle: 'Agenda Acara',
-      agenda: {
-        item1: 'Registrasi & Pemindaian QR Check-in',
-        item2: 'Sesi 1: Dasar-dasar Vue Router & Navigasi',
-        item3: 'Rehat Kopi & Sesi Networking',
-        item4: 'Sesi 2: Implementasi Layout System & Grid',
-        item5: 'Tanya Jawab & Penutupan'
-      },
       registration: 'Pendaftaran Peserta',
       free: 'Gratis',
-      ticketDesc: 'Amankan kursi Anda sekarang sebelum kuota penuh.',
+      ticketDesc: 'Amankan tiket Anda sebelum kuota penuh.',
+      ticketDescEnded: 'Pendaftaran ditutup karena acara sudah berakhir.',
       registerBtn: 'Daftar Sekarang',
-      spots: 'Hanya tersisa {n} kursi!',
-      notFoundTitle: 'Acara tidak ditemukan',
-      notFoundDesc: 'Acara yang Anda cari tidak ada atau sudah dihapus.'
+      registeredBtn: 'Terdaftar',
+      registeredNote: 'Anda sudah terdaftar! Sampai jumpa di acara.',
+      closedBtn: 'Pendaftaran Ditutup',
+      spots: 'Tersedia {n} kursi',
+      notFoundTitle: '404 - Acara Tidak Ditemukan',
+      notFoundDesc: 'Acara yang Anda cari tidak tersedia atau sudah dihapus oleh penyelenggara.',
+      notFoundBtn: 'Kembali ke Katalog Acara'
     }
   }
 }
@@ -271,6 +375,19 @@ export function useLanguage() {
       timeZone: 'UTC'
     }).format(new Date(iso))
 
+  // datetime-local "2026-10-15T10:00" -> "Oct 15, 2026 • 10:00 AM"
+  const formatDateTime = (value) => {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return value
+    const opts = { day: '2-digit', month: 'short', year: 'numeric' }
+    const datePart = date.toLocaleDateString(dateLocales[locale.value], opts)
+    const timePart = date.toLocaleTimeString(dateLocales[locale.value], {
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+    return `${datePart} • ${timePart}`
+  }
+
   const toggleLocale = () => {
     locale.value = locale.value === 'EN' ? 'ID' : 'EN'
   }
@@ -279,6 +396,7 @@ export function useLanguage() {
     locale,
     t,
     formatDate,
+    formatDateTime,
     toggleLocale
   }
 }

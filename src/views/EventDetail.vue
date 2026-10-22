@@ -1,39 +1,46 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { Calendar, MapPin, Users } from 'lucide-vue-next'
+import { Calendar, MapPin, Users, CalendarX2, CircleCheck } from 'lucide-vue-next'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppCard from '@/components/ui/AppCard.vue'
+import { useEvents } from '@/composables/useEvents'
 import { useLanguage } from '@/composables/useLanguage'
-import { findEvent } from '@/data/events'
 
 const route = useRoute()
-const { t, formatDate } = useLanguage()
+const { t, formatDateTime } = useLanguage()
+const { getEventById } = useEvents()
 
-const event = computed(() => findEvent(route.params.id))
+const event = computed(() => getEventById(route.params.id))
 
-const agenda = [
-  { time: '09:00 AM', key: 'item1' },
-  { time: '10:00 AM', key: 'item2' },
-  { time: '11:30 AM', key: 'item3' },
-  { time: '01:00 PM', key: 'item4' },
-  { time: '03:00 PM', key: 'item5' },
-]
+const registered = ref(false)
+watch(
+  () => route.params.id,
+  () => {
+    registered.value = false
+  },
+)
 </script>
 
 <template>
-  <div class="event-detail-page">
+  <div :class="['event-detail-page', { 'has-bar': event }]">
     <button @click="$router.push('/browse/events')" class="btn-back">
       &larr; {{ t('eventDetail.back') }}
     </button>
 
     <template v-if="event">
       <div class="detail-header">
-        <span class="event-tag">{{ t(`events.categories.${event.cat}`) }}</span>
+        <div class="header-tags">
+          <span class="event-tag">{{ t(`events.categories.${event.cat}`) }}</span>
+          <span v-if="event.done" class="status-tag status-ended">
+            {{ t('eventDetail.statusEnded') }}
+          </span>
+          <span v-else class="status-tag status-live">{{ t('eventDetail.statusLive') }}</span>
+        </div>
         <h1>{{ event.title }}</h1>
         <div class="meta-info">
           <span class="meta-item">
-            <Calendar :size="18" class="meta-icon" /> {{ formatDate(event.date, 'long') }}
+            <Calendar :size="18" class="meta-icon" /> {{ formatDateTime(event.date) }}
           </span>
           <span class="meta-item"><MapPin :size="18" class="meta-icon" /> {{ event.loc }}</span>
           <span class="meta-item">
@@ -45,41 +52,61 @@ const agenda = [
       <div class="detail-content grid-asymmetric">
         <div class="main-desc">
           <h2>{{ t('eventDetail.aboutTitle') }}</h2>
-          <p>{{ t('eventDetail.aboutDesc1') }}</p>
-          <p>{{ t('eventDetail.aboutDesc2') }}</p>
-
-          <h2>{{ t('eventDetail.agendaTitle') }}</h2>
-          <ul class="agenda-list">
-            <li v-for="item in agenda" :key="item.key">
-              <strong>{{ item.time }}</strong> - {{ t(`eventDetail.agenda.${item.key}`) }}
-            </li>
-          </ul>
+          <p class="description-text">{{ event.desc }}</p>
         </div>
 
         <aside class="sidebar">
           <AppCard class="ticket-card sticky-pane" :hoverable="false">
             <h3>{{ t('eventDetail.registration') }}</h3>
             <p class="price">{{ t('eventDetail.free') }}</p>
-            <p class="ticket-desc">{{ t('eventDetail.ticketDesc') }}</p>
-            <AppButton variant="primary" class="btn-register">
+            <p class="ticket-desc">
+              {{ event.done ? t('eventDetail.ticketDescEnded') : t('eventDetail.ticketDesc') }}
+            </p>
+            <AppButton
+              v-if="event.done"
+              variant="secondary"
+              class="btn-register btn-disabled"
+              disabled
+            >
+              {{ t('eventDetail.closedBtn') }}
+            </AppButton>
+            <AppButton
+              v-else-if="registered"
+              variant="secondary"
+              class="btn-register btn-done"
+              disabled
+            >
+              <CircleCheck :size="18" class="btn-icon" /> {{ t('eventDetail.registeredBtn') }}
+            </AppButton>
+            <AppButton v-else variant="primary" class="btn-register" @click="registered = true">
               {{ t('eventDetail.registerBtn') }}
             </AppButton>
-            <p class="spots">{{ t('eventDetail.spots', { n: event.seatsLeft }) }}</p>
+            <p v-if="!event.done" class="spots" role="status">
+              {{
+                registered
+                  ? t('eventDetail.registeredNote')
+                  : t('eventDetail.spots', { n: event.quota })
+              }}
+            </p>
           </AppCard>
         </aside>
       </div>
     </template>
 
-    <div v-else class="detail-header not-found">
-      <h1>{{ t('eventDetail.notFoundTitle') }}</h1>
+    <AppCard v-else class="not-found-card" :hoverable="false">
+      <CalendarX2 :size="48" :stroke-width="1.5" class="not-found-icon" />
+      <h2>{{ t('eventDetail.notFoundTitle') }}</h2>
       <p>{{ t('eventDetail.notFoundDesc') }}</p>
-    </div>
+      <AppButton variant="primary" to="/browse/events">{{
+        t('eventDetail.notFoundBtn')
+      }}</AppButton>
+    </AppCard>
   </div>
 </template>
 
 <style scoped>
 /* ruang kosong di bawah buat bar daftar yang nempel */
-.event-detail-page {
+.event-detail-page.has-bar {
   padding-bottom: 140px;
 }
 
@@ -108,7 +135,15 @@ const agenda = [
   margin-bottom: var(--space-8);
 }
 
-.event-tag {
+.header-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.event-tag,
+.status-tag {
   display: inline-block;
   background: var(--primary-soft);
   color: var(--primary);
@@ -116,7 +151,15 @@ const agenda = [
   border-radius: 50px;
   font-weight: 600;
   font-size: 0.9rem;
-  margin-bottom: var(--space-4);
+}
+
+.status-live {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.status-ended {
+  background: rgba(108, 117, 125, 0.15);
+  color: #5c636a;
 }
 
 .detail-header h1 {
@@ -124,6 +167,7 @@ const agenda = [
   font-size: clamp(1.75rem, 6vw, 2.8rem);
   margin-bottom: var(--space-4);
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .meta-info {
@@ -146,8 +190,21 @@ const agenda = [
   flex-shrink: 0;
 }
 
-.not-found p {
+.not-found-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+}
+.not-found-icon {
+  color: var(--primary);
+}
+.not-found-card p {
   color: var(--text-muted);
+  max-width: 460px;
+  margin-bottom: var(--space-3);
 }
 
 .grid-asymmetric {
@@ -164,27 +221,13 @@ const agenda = [
   padding-left: var(--space-2);
 }
 
-.main-desc p {
+.description-text {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
   color: var(--text-muted);
   line-height: 1.8;
   margin-bottom: var(--space-6);
   font-size: 1rem;
-}
-
-.agenda-list {
-  list-style: none;
-  margin-bottom: var(--space-8);
-}
-
-.agenda-list li {
-  padding: var(--space-3) 0;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-muted);
-  font-size: 1rem;
-}
-
-.agenda-list strong {
-  color: var(--text-main);
 }
 
 /* di hp kartu tiket jadi bar di bawah layar, jadi tombol daftar selalu kelihatan */
@@ -236,16 +279,33 @@ const agenda = [
   width: 100%;
 }
 
+.btn-icon {
+  vertical-align: -3px;
+}
+
+.btn-disabled,
+.btn-done {
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.btn-disabled {
+  opacity: 0.6;
+}
+.btn-done {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
 .spots {
   grid-area: 1 / 2;
   text-align: right;
-  color: var(--danger);
+  color: var(--success);
   font-weight: 600;
   font-size: 0.85rem;
 }
 
 @media (min-width: 901px) {
-  .event-detail-page {
+  .event-detail-page.has-bar {
     padding-bottom: 0;
   }
   .btn-back {
@@ -256,9 +316,11 @@ const agenda = [
   .detail-header {
     padding: var(--space-12) var(--space-8);
   }
+  .not-found-card {
+    padding: var(--space-12);
+  }
   .meta-item,
-  .main-desc p,
-  .agenda-list li {
+  .description-text {
     font-size: 1.05rem;
   }
   .grid-asymmetric {

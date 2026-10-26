@@ -11,7 +11,7 @@ import { useLanguage } from '@/composables/useLanguage'
 
 const router = useRouter()
 const { t } = useLanguage()
-const { activeEvents } = useEvents()
+const { activeEvents, isUserRegistered } = useEvents()
 
 const searchQuery = ref('')
 const selectedCategory = ref('all')
@@ -66,6 +66,7 @@ const handleViewDetail = (id) => {
           v-for="event in filteredEvents"
           :key="event.id"
           :event="event"
+          :is-registered="isUserRegistered(event.id)"
           @view-detail="handleViewDetail"
         />
       </div>

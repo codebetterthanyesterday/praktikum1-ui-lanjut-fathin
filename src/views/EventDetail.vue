@@ -1,30 +1,52 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Calendar, MapPin, Users, CalendarX2, CircleCheck } from 'lucide-vue-next'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppCard from '@/components/ui/AppCard.vue'
-import { useEvents } from '@/composables/useEvents'
+import { useEvents, seatsLeft } from '@/composables/useEvents'
 import { useLanguage } from '@/composables/useLanguage'
 
 const route = useRoute()
+const router = useRouter()
 const { t, formatDateTime } = useLanguage()
-const { getEventById } = useEvents()
+const { getEventById, isUserRegistered } = useEvents()
 
 const event = computed(() => getEventById(route.params.id))
+const isRegistered = computed(() => (event.value ? isUserRegistered(event.value.id) : false))
+const seats = computed(() => (event.value ? seatsLeft(event.value) : 0))
 
-const registered = ref(false)
-watch(
-  () => route.params.id,
-  () => {
-    registered.value = false
-  },
-)
+// urutan prioritas: selesai > sudah daftar > kuota habis > bisa daftar
+const status = computed(() => {
+  if (!event.value) return null
+  if (event.value.done) return 'ended'
+  if (isRegistered.value) return 'registered'
+  if (seats.value <= 0) return 'soldOut'
+  return 'open'
+})
+
+const statusTag = {
+  ended: { cls: 'status-ended', key: 'eventDetail.statusEnded' },
+  registered: { cls: 'status-registered', key: 'eventDetail.statusRegistered' },
+  soldOut: { cls: 'status-soldout', key: 'eventDetail.statusSoldOut' },
+  open: { cls: 'status-live', key: 'eventDetail.statusLive' },
+}
+
+const ticketDesc = {
+  ended: 'eventDetail.ticketDescEnded',
+  registered: 'eventDetail.ticketDescRegistered',
+  soldOut: 'eventDetail.ticketDescSoldOut',
+  open: 'eventDetail.ticketDesc',
+}
+
+const handleRegisterClick = () => {
+  router.push(`/browse/events/${event.value.id}/register`)
+}
 </script>
 
 <template>
   <div :class="['event-detail-page', { 'has-bar': event }]">
-    <button @click="$router.push('/browse/events')" class="btn-back">
+    <button @click="router.push('/browse/events')" class="btn-back">
       &larr; {{ t('eventDetail.back') }}
     </button>
 
@@ -32,10 +54,7 @@ watch(
       <div class="detail-header">
         <div class="header-tags">
           <span class="event-tag">{{ t(`events.categories.${event.cat}`) }}</span>
-          <span v-if="event.done" class="status-tag status-ended">
-            {{ t('eventDetail.statusEnded') }}
-          </span>
-          <span v-else class="status-tag status-live">{{ t('eventDetail.statusLive') }}</span>
+          <span :class="['status-tag', statusTag[status].cls]">{{ t(statusTag[status].key) }}</span>
         </div>
         <h1>{{ event.title }}</h1>
         <div class="meta-info">
@@ -44,7 +63,8 @@ watch(
           </span>
           <span class="meta-item"><MapPin :size="18" class="meta-icon" /> {{ event.loc }}</span>
           <span class="meta-item">
-            <Users :size="18" class="meta-icon" /> {{ t('eventDetail.quota', { n: event.quota }) }}
+            <Users :size="18" class="meta-icon" />
+            {{ t('eventDetail.seatsLeft', { n: seats, total: event.quota }) }}
           </span>
         </div>
       </div>
@@ -59,33 +79,44 @@ watch(
           <AppCard class="ticket-card sticky-pane" :hoverable="false">
             <h3>{{ t('eventDetail.registration') }}</h3>
             <p class="price">{{ t('eventDetail.free') }}</p>
-            <p class="ticket-desc">
-              {{ event.done ? t('eventDetail.ticketDescEnded') : t('eventDetail.ticketDesc') }}
-            </p>
-            <AppButton
-              v-if="event.done"
-              variant="secondary"
-              class="btn-register btn-disabled"
-              disabled
-            >
-              {{ t('eventDetail.closedBtn') }}
-            </AppButton>
-            <AppButton
-              v-else-if="registered"
-              variant="secondary"
-              class="btn-register btn-done"
-              disabled
-            >
-              <CircleCheck :size="18" class="btn-icon" /> {{ t('eventDetail.registeredBtn') }}
-            </AppButton>
-            <AppButton v-else variant="primary" class="btn-register" @click="registered = true">
-              {{ t('eventDetail.registerBtn') }}
-            </AppButton>
-            <p v-if="!event.done" class="spots" role="status">
+            <p :class="['ticket-desc', `desc-${status}`]">{{ t(ticketDesc[status]) }}</p>
+
+            <div class="action-buttons">
+              <AppButton
+                v-if="status === 'ended'"
+                variant="secondary"
+                class="btn-register btn-disabled"
+                disabled
+              >
+                {{ t('eventDetail.closedBtn') }}
+              </AppButton>
+
+              <div v-else-if="status === 'registered'" class="registered-action-group">
+                <AppButton variant="secondary" class="btn-register btn-registered" disabled>
+                  <CircleCheck :size="18" class="btn-icon" /> {{ t('eventDetail.alreadyBtn') }}
+                </AppButton>
+                <RouterLink :to="`/browse/your-events/${event.id}`" class="view-receipt-link">
+                  {{ t('eventDetail.viewReceipt') }} &rarr;
+                </RouterLink>
+              </div>
+
+              <AppButton
+                v-else-if="status === 'soldOut'"
+                variant="secondary"
+                class="btn-register btn-disabled"
+                disabled
+              >
+                {{ t('eventDetail.soldOutBtn') }}
+              </AppButton>
+
+              <AppButton v-else variant="primary" class="btn-register" @click="handleRegisterClick">
+                {{ t('eventDetail.registerBtn') }}
+              </AppButton>
+            </div>
+
+            <p :class="['spots', `spots-${status}`]" role="status">
               {{
-                registered
-                  ? t('eventDetail.registeredNote')
-                  : t('eventDetail.spots', { n: event.quota })
+                status === 'open' ? t('eventDetail.spots', { n: seats }) : t(statusTag[status].key)
               }}
             </p>
           </AppCard>
@@ -156,6 +187,14 @@ watch(
 .status-live {
   background: var(--success-soft);
   color: var(--success);
+}
+.status-registered {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.status-soldout {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 .status-ended {
   background: rgba(108, 117, 125, 0.15);
@@ -274,9 +313,37 @@ watch(
   margin-bottom: var(--space-6);
 }
 
-.btn-register {
+.action-buttons {
   grid-area: 2 / 1 / 3 / -1;
+}
+
+.btn-register {
   width: 100%;
+}
+
+/* di hp yang muncul cuma link ke tiket, tombol "sudah terdaftar"-nya disembunyiin biar bar ga tinggi */
+.registered-action-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.registered-action-group .btn-registered {
+  display: none;
+}
+
+.view-receipt-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.view-receipt-link:hover {
+  background: var(--primary-soft);
 }
 
 .btn-icon {
@@ -284,16 +351,17 @@ watch(
 }
 
 .btn-disabled,
-.btn-done {
+.btn-registered {
   cursor: not-allowed;
   box-shadow: none;
 }
 .btn-disabled {
-  opacity: 0.6;
+  opacity: 0.65;
 }
-.btn-done {
-  background: var(--success-soft);
-  color: var(--success);
+.btn-registered {
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid var(--border-color);
 }
 
 .spots {
@@ -302,6 +370,15 @@ watch(
   color: var(--success);
   font-weight: 600;
   font-size: 0.85rem;
+}
+.spots-registered {
+  color: #1d4ed8;
+}
+.spots-soldOut {
+  color: #b91c1c;
+}
+.spots-ended {
+  color: #6c757d;
 }
 
 @media (min-width: 901px) {
@@ -342,6 +419,26 @@ watch(
   .ticket-desc {
     display: block;
   }
+  .desc-registered {
+    color: #15803d;
+    font-weight: 500;
+  }
+  .desc-soldOut {
+    color: #b91c1c;
+    font-weight: 500;
+  }
+  .registered-action-group .btn-registered {
+    display: block;
+  }
+  .view-receipt-link {
+    min-height: 0;
+    border: none;
+    font-size: 0.9rem;
+  }
+  .view-receipt-link:hover {
+    background: none;
+    text-decoration: underline;
+  }
   /* sidebar jangan dikasih align-items: start, nanti sticky-nya ga jalan */
   .sticky-pane {
     position: sticky;
@@ -356,6 +453,9 @@ watch(
     margin-top: var(--space-4);
     text-align: center;
     font-size: 0.95rem;
+  }
+  .spots:not(.spots-open) {
+    display: none;
   }
 }
 </style>

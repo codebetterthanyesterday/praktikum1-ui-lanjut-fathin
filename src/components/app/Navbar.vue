@@ -27,6 +27,7 @@ const menus = computed(() => [
         children: [{ name: t('nav.eventDetail'), path: sampleEventPath.value }],
       },
       { name: t('nav.category'), path: '/browse/category' },
+      { name: t('nav.yourEvents'), path: '/browse/your-events' },
     ],
   },
   { name: t('nav.contact'), path: '/contact' },

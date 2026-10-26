@@ -7,13 +7,16 @@ const route = useRoute()
 const { t } = useLanguage()
 
 const breadcrumbKeys = {
-  'Home': 'nav.home',
-  'About': 'nav.about',
-  'Browse': 'nav.browse',
+  Home: 'nav.home',
+  About: 'nav.about',
+  Browse: 'nav.browse',
   'Event List': 'nav.eventList',
   'Event Detail': 'nav.eventDetail',
-  'Category': 'nav.category',
-  'Contact': 'nav.contact'
+  Category: 'nav.category',
+  Contact: 'nav.contact',
+  'Register Event': 'nav.registerEvent',
+  'Your Events': 'nav.yourEvents',
+  'Ticket Receipt': 'nav.ticketReceipt',
 }
 
 const translateBreadcrumb = (crumb) => {
@@ -48,6 +51,22 @@ const breadcrumbs = computed(() => {
     crumbs.splice(crumbs.length - 1, 0, {
       path: '/browse/events',
       meta: { breadcrumb: 'Event List' },
+    })
+  }
+
+  if (route.name === 'event-registration') {
+    crumbs.splice(
+      crumbs.length - 1,
+      0,
+      { path: '/browse/events', meta: { breadcrumb: 'Event List' } },
+      { path: `/browse/events/${route.params.id}`, meta: { breadcrumb: 'Event Detail' } },
+    )
+  }
+
+  if (route.name === 'ticket-receipt') {
+    crumbs.splice(crumbs.length - 1, 0, {
+      path: '/browse/your-events',
+      meta: { breadcrumb: 'Your Events' },
     })
   }
 

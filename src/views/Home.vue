@@ -7,10 +7,15 @@ import { useLanguage } from '@/composables/useLanguage'
 import { useEvents } from '@/composables/useEvents'
 
 const { t } = useLanguage()
-const { activeEvents } = useEvents()
+const { activeEvents, myRegistrations } = useEvents()
 
 const sampleEventPath = computed(() =>
   activeEvents.value.length ? `/browse/events/${activeEvents.value[0].id}` : '/browse/events',
+)
+const sampleTicketPath = computed(() =>
+  myRegistrations.value.length
+    ? `/browse/your-events/${myRegistrations.value[0].eventId}`
+    : '/browse/your-events',
 )
 
 const features = computed(() => [
@@ -73,6 +78,14 @@ const features = computed(() => [
                   </ul>
                 </li>
                 <li><router-link to="/browse/category">Category</router-link></li>
+                <li>
+                  <router-link to="/browse/your-events">Your Events</router-link>
+                  <ul>
+                    <li>
+                      <router-link :to="sampleTicketPath">Ticket Receipt (Example)</router-link>
+                    </li>
+                  </ul>
+                </li>
               </ul>
             </li>
             <li><router-link to="/contact">Contact</router-link></li>

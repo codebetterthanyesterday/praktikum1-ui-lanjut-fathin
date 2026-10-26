@@ -1,5 +1,5 @@
 <script setup>
-import { MapPin } from 'lucide-vue-next'
+import { MapPin, CircleCheck } from 'lucide-vue-next'
 import AppCard from '@/components/ui/AppCard.vue'
 import { useLanguage } from '@/composables/useLanguage'
 
@@ -7,6 +7,10 @@ defineProps({
   event: {
     type: Object,
     required: true,
+  },
+  isRegistered: {
+    type: Boolean,
+    default: false,
   },
 })
 defineEmits(['view-detail'])
@@ -18,7 +22,12 @@ const { t, formatDateTime } = useLanguage()
   <AppCard as="article" class="event-card-wrapper">
     <div class="event-body">
       <div class="event-meta">
-        <span class="event-date">{{ formatDateTime(event.date) }}</span>
+        <div class="meta-left">
+          <span class="event-date">{{ formatDateTime(event.date) }}</span>
+          <span v-if="isRegistered" class="badge-registered">
+            <CircleCheck :size="13" :stroke-width="2.5" /> {{ t('events.registeredBadge') }}
+          </span>
+        </div>
         <span class="event-category">{{ t(`events.categories.${event.cat}`) }}</span>
       </div>
 
@@ -55,6 +64,27 @@ const { t, formatDateTime } = useLanguage()
   align-items: center;
   gap: var(--space-2);
   margin-bottom: var(--space-4);
+}
+
+.meta-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.badge-registered {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .event-date {

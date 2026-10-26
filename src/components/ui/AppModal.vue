@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watch, nextTick, onUnmounted } from 'vue'
-import { TriangleAlert } from 'lucide-vue-next'
+import { ref, computed, watch, nextTick, onUnmounted, useId } from 'vue'
+import { TriangleAlert, CircleCheck, Info } from 'lucide-vue-next'
 
 const props = defineProps({
   isOpen: {
@@ -13,7 +13,7 @@ const props = defineProps({
   },
   message: {
     type: String,
-    default: 'Are you sure you want to proceed with this action?',
+    default: '',
   },
   confirmText: {
     type: String,
@@ -23,17 +23,51 @@ const props = defineProps({
     type: String,
     default: 'Cancel',
   },
+  showCancel: {
+    type: Boolean,
+    default: true,
+  },
+  variant: {
+    type: String,
+    default: 'danger',
+    validator: (value) => ['danger', 'primary', 'success'].includes(value),
+  },
+  badgeText: {
+    type: String,
+    default: '',
+  },
+  badgeVariant: {
+    type: String,
+    default: '',
+  },
 })
 const emit = defineEmits(['confirm', 'close'])
 
-const cancelBtn = ref(null)
+const icons = { danger: TriangleAlert, primary: Info, success: CircleCheck }
+const icon = computed(() => icons[props.variant])
+
+// id unik, soalnya bisa ada lebih dari satu modal di satu halaman
+const uid = useId()
+const titleId = `${uid}-title`
+const messageId = `${uid}-message`
+
+const card = ref(null)
 let lastFocused = null
 
 const onKeydown = (e) => {
   if (e.key === 'Escape') emit('close')
 }
 
-// fokus ke tombol Cancel dulu biar ga kepencet confirm
+// fokus ke tombol yang paling aman dulu (Cancel) biar ga kepencet confirm
+const focusFirst = () => {
+  const el =
+    card.value?.querySelector('[data-autofocus]') ||
+    card.value?.querySelector('.btn-cancel') ||
+    card.value?.querySelector('.modal-footer button, .modal-footer a') ||
+    card.value
+  el?.focus()
+}
+
 watch(
   () => props.isOpen,
   async (open) => {
@@ -42,11 +76,11 @@ watch(
       document.addEventListener('keydown', onKeydown)
       document.body.style.overflow = 'hidden'
       await nextTick()
-      cancelBtn.value?.focus()
+      focusFirst()
     } else {
       document.removeEventListener('keydown', onKeydown)
       document.body.style.overflow = ''
-      lastFocused?.focus?.()
+      if (lastFocused?.isConnected) lastFocused.focus()
     }
   },
 )
@@ -62,29 +96,40 @@ onUnmounted(() => {
     <Transition name="modal-fade">
       <div v-if="isOpen" class="modal-overlay" @click.self="$emit('close')">
         <div
-          class="modal-card"
-          role="alertdialog"
+          ref="card"
+          :class="['modal-card', `modal-${variant}`]"
+          :role="variant === 'danger' ? 'alertdialog' : 'dialog'"
           aria-modal="true"
-          aria-labelledby="modal-title"
-          aria-describedby="modal-message"
+          :aria-labelledby="titleId"
+          :aria-describedby="message ? messageId : undefined"
+          tabindex="-1"
         >
+          <span v-if="badgeText" :class="['modal-badge', `badge-${badgeVariant || variant}`]">
+            {{ badgeText }}
+          </span>
           <div class="modal-header">
-            <TriangleAlert :size="26" class="modal-icon" />
-            <h3 id="modal-title" class="modal-title">{{ title }}</h3>
+            <component :is="icon" :size="26" class="modal-icon" />
+            <h3 :id="titleId" class="modal-title">{{ title }}</h3>
           </div>
 
           <div class="modal-body">
-            <p id="modal-message" class="modal-message">{{ message }}</p>
+            <p v-if="message" :id="messageId" class="modal-message">{{ message }}</p>
             <slot />
           </div>
 
           <div class="modal-footer">
-            <button ref="cancelBtn" type="button" class="btn-cancel" @click="$emit('close')">
-              {{ cancelText }}
-            </button>
-            <button type="button" class="btn-confirm" @click="$emit('confirm')">
-              {{ confirmText }}
-            </button>
+            <slot name="footer">
+              <button v-if="showCancel" type="button" class="btn-cancel" @click="$emit('close')">
+                {{ cancelText }}
+              </button>
+              <button
+                type="button"
+                :class="['btn-confirm', `btn-${variant}`]"
+                @click="$emit('confirm')"
+              >
+                {{ confirmText }}
+              </button>
+            </slot>
           </div>
         </div>
       </div>
@@ -115,7 +160,38 @@ onUnmounted(() => {
   padding: var(--space-6);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   border: 1px solid var(--border-color);
+  max-height: calc(100dvh - var(--space-8));
+  overflow-y: auto;
   animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-card:focus {
+  outline: none;
+}
+
+.modal-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: var(--space-3);
+}
+.badge-danger {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+.badge-primary {
+  background: #ede9fe;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+.badge-success {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
 }
 
 @keyframes scaleUp {
@@ -137,8 +213,16 @@ onUnmounted(() => {
 }
 
 .modal-icon {
-  color: #f59f00;
   flex-shrink: 0;
+}
+.modal-danger .modal-icon {
+  color: #f59f00;
+}
+.modal-primary .modal-icon {
+  color: var(--primary);
+}
+.modal-success .modal-icon {
+  color: #16a34a;
 }
 
 .modal-title {
@@ -162,6 +246,8 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column-reverse;
   gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-color);
 }
 
 .btn-cancel,
@@ -189,12 +275,26 @@ onUnmounted(() => {
 }
 
 .btn-confirm {
-  background: var(--danger);
   color: white;
   border: none;
 }
-.btn-confirm:hover {
+.btn-confirm.btn-danger {
+  background: var(--danger);
+}
+.btn-confirm.btn-danger:hover {
   background: #d62828;
+}
+.btn-confirm.btn-primary {
+  background: var(--primary);
+}
+.btn-confirm.btn-primary:hover {
+  background: var(--primary-hover);
+}
+.btn-confirm.btn-success {
+  background: #16a34a;
+}
+.btn-confirm.btn-success:hover {
+  background: #15803d;
 }
 .btn-confirm:active {
   transform: scale(0.98);

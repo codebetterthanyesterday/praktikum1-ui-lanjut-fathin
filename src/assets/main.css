@@ -11,6 +11,7 @@
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
+  --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
   --space-12: 48px;
@@ -69,6 +70,14 @@ button {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: var(--space-6);
+}
+
+@media print {
+  .navbar,
+  .breadcrumb,
+  .no-print {
+    display: none !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

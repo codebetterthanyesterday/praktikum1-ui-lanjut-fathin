@@ -22,7 +22,10 @@ Buka `http://localhost:5173`. Kalau mau build: `npm run build`.
 - `/about`
 - `/browse/events` daftar event, bisa dicari dan difilter per kategori
 - `/browse/events/:id` detail event
+- `/browse/events/:id/register` form pendaftaran event
 - `/browse/category`
+- `/browse/your-events` tiket yang sudah didaftar
+- `/browse/your-events/:id` bukti tiket
 - `/contact`
 - `/dashboard` dashboard organizer (pemantauan)
 - `/dashboard/events` kelola acara (tambah, selesaikan, hapus)
@@ -62,6 +65,16 @@ Bahasa bisa diganti EN/ID lewat tombol di navbar.
 - selesaikan & hapus acara harus konfirmasi dulu lewat `AppModal` (backdrop blur)
 - katalog publik cuma nampilin acara aktif, detail acara diambil dari id di URL, kalau ga ketemu muncul 404
 
+**Modul 5** - user flow pendaftaran peserta:
+
+- tombol di detail event ikut status: Registration Closed, Already Registered (ada link ke tiket), Sold Out, atau Register Now (pindah ke form pakai `router.push`)
+- form pendaftaran 2 kolom (`RegistrationSummary` + `RegistrationForm`), validasi per kolom, isian yang benar ga hilang waktu ada error
+- kalau form udah diisi terus mau keluar/batal, muncul konfirmasi dulu
+- setelah daftar muncul modal sukses + kode booking (`AppModal` sekarang punya slot `footer`)
+- halaman Your Events buat lihat/batalin tiket, dan halaman bukti tiket (bisa dicetak)
+- event yang dihapus panitia ikut ngehapus tiketnya, kartu di katalog dikasih label Registered
+- `EventManagement` dipecah jadi `OrganizerEventCard` dan `EventCreateForm`
+
 ## Struktur folder
 
 ```text
@@ -70,7 +83,7 @@ src/
 ├── components/
 │   ├── app/        Navbar, Breadcrumb
 │   ├── ui/         AppCard, AppButton, AppModal
-│   └── event/      EventCard, SearchBar, CategoryFilter
+│   └── event/      EventCard, SearchBar, CategoryFilter, Registration*, OrganizerEventCard, EventCreateForm
 ├── composables/    useLanguage.js (ganti bahasa), useEvents.js (data acara)
 ├── layouts/        App.vue, DashboardLayout.vue
 ├── router/         index.js

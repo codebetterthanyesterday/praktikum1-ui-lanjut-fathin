@@ -16,6 +16,14 @@ npm run dev
 
 Buka `http://localhost:5173`. Kalau mau build: `npm run build`.
 
+Data acara diambil dari MockAPI. Sebelum `npm run dev`, isi URL project MockAPI kamu di file `.env`:
+
+```sh
+VITE_API_URL=https://<project-id>.mockapi.io/api/v1
+```
+
+Resource-nya bernama `events` dengan field `title`, `cat`, `date`, `loc`, `quota`, `desc`, `done` (boolean). Kalau URL belum diisi, halaman katalog bakal nampilin pesan kalau API belum dikonfigurasi. Habis ngubah `.env`, dev server-nya harus dijalankan ulang.
+
 ## Halaman
 
 - `/` home
@@ -75,6 +83,15 @@ Bahasa bisa diganti EN/ID lewat tombol di navbar.
 - event yang dihapus panitia ikut ngehapus tiketnya, kartu di katalog dikasih label Registered
 - `EventManagement` dipecah jadi `OrganizerEventCard` dan `EventCreateForm`
 
+**Modul 6** - integrasi ke REST API (MockAPI):
+
+- `useEvents.js` sekarang ambil dan kirim data ke server pakai `fetch` + `async/await`: GET semua event, GET by id, POST buat event baru, PUT buat tandai selesai, DELETE buat hapus
+- helper `services/http.js` ngurus base URL dari `.env`, timeout 10 detik, dan pesan error yang ramah (offline, timeout, HTTP 404/500)
+- katalog punya 4 kondisi: loading (skeleton), error (ada tombol coba lagi), kosong, dan data tampil. Ada tombol muat ulang juga
+- detail event yang dibuka langsung lewat URL diambil dari `/events/:id`, kalau 404 muncul halaman not found
+- tombol (`AppButton`, modal, form) ada state loading biar ga kepencet dua kali
+- tiket peserta tetap di localStorage, tapi jumlah pendaftar (`booked`) disimpan di server
+
 ## Struktur folder
 
 ```text
@@ -82,9 +99,10 @@ src/
 ├── assets/         main.css
 ├── components/
 │   ├── app/        Navbar, Breadcrumb
-│   ├── ui/         AppCard, AppButton, AppModal
+│   ├── ui/         AppCard, AppButton, AppModal, SkeletonCard, ErrorState
 │   └── event/      EventCard, SearchBar, CategoryFilter, Registration*, OrganizerEventCard, EventCreateForm
-├── composables/    useLanguage.js (ganti bahasa), useEvents.js (data acara)
+├── composables/    useLanguage.js (ganti bahasa), useEvents.js (data acara dari API)
+├── services/       http.js (helper fetch ke REST API)
 ├── layouts/        App.vue, DashboardLayout.vue
 ├── router/         index.js
 └── views/          halaman-halamannya

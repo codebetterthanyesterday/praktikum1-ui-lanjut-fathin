@@ -28,7 +28,6 @@ defineEmits(['update:modelValue'])
 </template>
 
 <style scoped>
-/* di hp digeser ke samping, ga turun baris */
 .category-filter {
   display: flex;
   gap: var(--space-2);

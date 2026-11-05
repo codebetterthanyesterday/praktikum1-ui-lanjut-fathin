@@ -1,12 +1,18 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { ArrowRight, CalendarPlus } from 'lucide-vue-next'
 import AppCard from '@/components/ui/AppCard.vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import ErrorState from '@/components/ui/ErrorState.vue'
 import { useEvents } from '@/composables/useEvents'
 import { useLanguage } from '@/composables/useLanguage'
 
-const { events, totalEvents, activeEvents, completedEvents } = useEvents()
+const { events, totalEvents, activeEvents, completedEvents, fetchEvents, loading, loaded, error } =
+  useEvents()
+
+onMounted(fetchEvents)
+
+const showSkeleton = computed(() => !loaded.value && !error.value)
 const { t, formatDateTime } = useLanguage()
 
 const metrics = computed(() => [
@@ -38,67 +44,108 @@ const metrics = computed(() => [
       </AppButton>
     </div>
 
-    <div class="metrics-grid">
-      <AppCard v-for="metric in metrics" :key="metric.label" class="metric-card" :hoverable="false">
-        <h3>{{ metric.label }}</h3>
-        <p :class="['metric-value', metric.tone]">{{ metric.value }}</p>
-        <span class="metric-hint">{{ metric.hint }}</span>
-      </AppCard>
-    </div>
+    <ErrorState
+      v-if="error"
+      :title="t('states.dashboardErrorTitle')"
+      :error="error"
+      :retrying="loading"
+      @retry="fetchEvents"
+    />
 
-    <div class="data-table-container">
-      <div class="table-header">
-        <div>
-          <h3>{{ t('dashboard.tableTitle') }}</h3>
-          <p class="table-subtitle">{{ t('dashboard.tableSubtitle') }}</p>
-        </div>
-        <RouterLink to="/dashboard/events" class="btn-manage-link">
-          {{ t('dashboard.openManagement') }} <ArrowRight :size="16" />
-        </RouterLink>
+    <template v-else>
+      <div class="metrics-grid">
+        <AppCard
+          v-for="metric in metrics"
+          :key="metric.label"
+          class="metric-card"
+          :hoverable="false"
+        >
+          <h3>{{ metric.label }}</h3>
+          <p :class="['metric-value', metric.tone]">
+            <span v-if="showSkeleton" class="sk-value skeleton-shimmer" aria-hidden="true"></span>
+            <template v-else>{{ metric.value }}</template>
+          </p>
+          <span class="metric-hint">{{ metric.hint }}</span>
+        </AppCard>
       </div>
 
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ t('dashboard.colTitle') }}</th>
-            <th>{{ t('dashboard.colCategory') }}</th>
-            <th>{{ t('dashboard.colDateLoc') }}</th>
-            <th>{{ t('dashboard.colQuota') }}</th>
-            <th>{{ t('dashboard.colStatus') }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="events.length === 0" class="empty-row">
-            <td colspan="5" class="empty-table-cell">
-              <div class="empty-table-content">
-                <CalendarPlus :size="40" :stroke-width="1.5" class="empty-icon" />
-                <p>{{ t('dashboard.tableEmpty') }}</p>
-                <AppButton variant="primary" to="/dashboard/events">
-                  {{ t('dashboard.createFirst') }}
-                </AppButton>
-              </div>
-            </td>
-          </tr>
-          <tr v-for="item in events" :key="item.id">
-            <td class="cell-title">{{ item.title }}</td>
-            <td class="cell-cat">
-              <span class="category-badge">{{ t(`events.categories.${item.cat}`) }}</span>
-            </td>
-            <td class="cell-meta">{{ formatDateTime(item.date) }} &bull; {{ item.loc }}</td>
-            <td class="cell-quota">{{ t('dashboard.pax', { n: item.quota }) }}</td>
-            <td class="cell-status">
-              <span :class="['status-badge', item.done ? 'status-completed' : 'status-active']">
-                {{ item.done ? t('dashboard.statusCompleted') : t('dashboard.statusActive') }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <div class="data-table-container">
+        <div class="table-header">
+          <div>
+            <h3>{{ t('dashboard.tableTitle') }}</h3>
+            <p class="table-subtitle">{{ t('dashboard.tableSubtitle') }}</p>
+          </div>
+          <RouterLink to="/dashboard/events" class="btn-manage-link">
+            {{ t('dashboard.openManagement') }} <ArrowRight :size="16" />
+          </RouterLink>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>{{ t('dashboard.colTitle') }}</th>
+              <th>{{ t('dashboard.colCategory') }}</th>
+              <th>{{ t('dashboard.colDateLoc') }}</th>
+              <th>{{ t('dashboard.colQuota') }}</th>
+              <th>{{ t('dashboard.colStatus') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-if="showSkeleton">
+              <tr v-for="n in 4" :key="`sk-${n}`" class="sk-row" aria-hidden="true">
+                <td colspan="5"><span class="sk-line skeleton-shimmer"></span></td>
+              </tr>
+            </template>
+            <tr v-else-if="events.length === 0" class="empty-row">
+              <td colspan="5" class="empty-table-cell">
+                <div class="empty-table-content">
+                  <CalendarPlus :size="40" :stroke-width="1.5" class="empty-icon" />
+                  <p>{{ t('dashboard.tableEmpty') }}</p>
+                  <AppButton variant="primary" to="/dashboard/events">
+                    {{ t('dashboard.createFirst') }}
+                  </AppButton>
+                </div>
+              </td>
+            </tr>
+            <tr v-for="item in events" :key="item.id">
+              <td class="cell-title">{{ item.title }}</td>
+              <td class="cell-cat">
+                <span class="category-badge">{{ t(`events.categories.${item.cat}`) }}</span>
+              </td>
+              <td class="cell-meta">{{ formatDateTime(item.date) }} &bull; {{ item.loc }}</td>
+              <td class="cell-quota">{{ t('dashboard.pax', { n: item.quota }) }}</td>
+              <td class="cell-status">
+                <span :class="['status-badge', item.done ? 'status-completed' : 'status-active']">
+                  {{ item.done ? t('dashboard.statusCompleted') : t('dashboard.statusActive') }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
   </div>
 </template>
 
 <style scoped>
+.sk-value {
+  display: inline-block;
+  width: 56px;
+  height: 1em;
+  border-radius: 6px;
+  vertical-align: middle;
+}
+
+.sk-line {
+  display: block;
+  height: 18px;
+  border-radius: 6px;
+}
+
+.data-table .sk-row {
+  display: block;
+}
+
 .dashboard-overview {
   max-width: 1200px;
   margin: 0 auto;
@@ -201,7 +248,6 @@ const metrics = computed(() => [
   text-decoration: underline;
 }
 
-/* di hp tiap baris ditumpuk jadi kartu kecil, ga perlu geser ke samping */
 .data-table,
 .data-table tbody {
   display: block;
@@ -361,7 +407,8 @@ const metrics = computed(() => [
     display: table-row-group;
   }
   .data-table tbody tr,
-  .data-table .empty-row {
+  .data-table .empty-row,
+  .data-table .sk-row {
     display: table-row;
   }
   .data-table th,

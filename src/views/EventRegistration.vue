@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppCard from '@/components/ui/AppCard.vue'
+import ErrorState from '@/components/ui/ErrorState.vue'
 import RegistrationSummary from '@/components/event/RegistrationSummary.vue'
 import RegistrationForm from '@/components/event/RegistrationForm.vue'
 import RegistrationReceipt from '@/components/event/RegistrationReceipt.vue'
@@ -12,16 +13,35 @@ import { useLanguage } from '@/composables/useLanguage'
 
 const route = useRoute()
 const router = useRouter()
-const { getEventById, isUserRegistered } = useEvents()
+const { getEventById, isUserRegistered, fetchEventById } = useEvents()
 const { t } = useLanguage()
 
 const event = computed(() => getEventById(route.params.id))
 const isRegistered = computed(() => (event.value ? isUserRegistered(event.value.id) : false))
 
+const pageLoading = ref(false)
+const pageError = ref(null)
+
+const loadEvent = async () => {
+  pageError.value = null
+  if (event.value) return
+  pageLoading.value = true
+  try {
+    await fetchEventById(route.params.id)
+  } catch (err) {
+    if (err.key !== 'api.notFound') pageError.value = err
+  } finally {
+    pageLoading.value = false
+  }
+}
+
+watch(() => route.params.id, loadEvent, { immediate: true })
+
+const holdForm = ref(false)
+
 const isSuccessModalOpen = ref(false)
 const confirmedData = ref(null)
 
-// urutan cek-nya sama kayak tombol di halaman detail
 const notice = computed(() => {
   const ev = event.value
   const detail = ev ? `/browse/events/${ev.id}` : '/browse/events'
@@ -31,7 +51,7 @@ const notice = computed(() => {
       actions: [{ label: t('eventDetail.notFoundBtn'), to: '/browse/events', primary: true }],
     }
   }
-  if (isRegistered.value) {
+  if (isRegistered.value && !holdForm.value) {
     return {
       key: 'already',
       actions: [
@@ -63,6 +83,11 @@ const handleRegistrationSuccess = (record) => {
   isSuccessModalOpen.value = true
 }
 
+const closeSuccessModal = () => {
+  isSuccessModalOpen.value = false
+  holdForm.value = false
+}
+
 const handleGoToCatalog = () => {
   isSuccessModalOpen.value = false
   router.push('/browse/events')
@@ -76,7 +101,21 @@ const handleGoToYourEvents = () => {
 
 <template>
   <div class="registration-page">
-    <AppCard v-if="notice" class="notice-card" :hoverable="false">
+    <div v-if="pageLoading && !event" class="registration-grid" role="status">
+      <div class="skeleton-card skeleton-shimmer"></div>
+      <div class="skeleton-card skeleton-shimmer skeleton-tall"></div>
+      <p class="sr-only">{{ t('states.loading') }}</p>
+    </div>
+
+    <ErrorState
+      v-else-if="pageError"
+      :title="t('states.errorTitle')"
+      :error="pageError"
+      :retrying="pageLoading"
+      @retry="loadEvent"
+    />
+
+    <AppCard v-else-if="notice" class="notice-card" :hoverable="false">
       <span class="notice-badge">{{ t(`register.${notice.key}Badge`) }}</span>
       <h2>{{ t(`register.${notice.key}Title`) }}</h2>
       <p>{{ t(`register.${notice.key}Desc`) }}</p>
@@ -99,6 +138,7 @@ const handleGoToYourEvents = () => {
       <section class="form-column">
         <RegistrationForm
           :event="event"
+          @submitting="holdForm = $event"
           @success="handleRegistrationSuccess"
           @cancel="handleBackToDetail"
         />
@@ -110,7 +150,7 @@ const handleGoToYourEvents = () => {
       :title="t('register.successTitle')"
       :badge-text="t('register.successBadge')"
       variant="success"
-      @close="isSuccessModalOpen = false"
+      @close="closeSuccessModal"
     >
       <RegistrationReceipt v-if="confirmedData && event" :ticket="confirmedData" :event="event" />
 
@@ -127,6 +167,10 @@ const handleGoToYourEvents = () => {
 </template>
 
 <style scoped>
+.skeleton-tall {
+  min-height: 480px;
+}
+
 .registration-page {
   padding-bottom: var(--space-12);
 }

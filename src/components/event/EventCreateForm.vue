@@ -1,14 +1,26 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
-import { TriangleAlert, PartyPopper } from 'lucide-vue-next'
+import { reactive, nextTick } from 'vue'
+import { TriangleAlert } from 'lucide-vue-next'
 import AppCard from '@/components/ui/AppCard.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import { categories } from '@/composables/useEvents'
 import { useLanguage } from '@/composables/useLanguage'
 
+defineProps({
+  submitting: {
+    type: Boolean,
+    default: false,
+  },
+  serverError: {
+    type: Object,
+    default: null,
+  },
+})
 const emit = defineEmits(['submit', 'cancel'])
 
 const { t } = useLanguage()
+
+const fields = ['title', 'date', 'loc', 'quota', 'desc']
 
 const emptyForm = () => ({
   title: '',
@@ -21,17 +33,31 @@ const emptyForm = () => ({
 
 // reactive() harus diisi ulang pakai Object.assign, jangan form = {...} nanti reaktivitasnya hilang
 const form = reactive(emptyForm())
-const submitted = ref(false)
-const errorMessage = ref('')
-const successMessage = ref('')
+const errors = reactive({ title: '', date: '', loc: '', quota: '', desc: '', banner: '' })
 
-const isEmpty = (field) => submitted.value && !String(form[field]).trim()
-const quotaInvalid = computed(() => submitted.value && !(Number(form.quota) >= 1))
+const rules = {
+  title: (v) => (!v ? 'errTitle' : v.length < 3 ? 'errTitleShort' : ''),
+  date: (v) => (!v ? 'errDate' : ''),
+  loc: (v) => (!v ? 'errLoc' : ''),
+  quota: (v) => (!(Number(v) >= 1) ? 'errQuota' : ''),
+  desc: (v) => (!v ? 'errDesc' : v.length < 10 ? 'errDescShort' : ''),
+}
+
+const validateField = (field) => {
+  const key = rules[field](String(form[field] ?? '').trim())
+  errors[field] = key ? `manage.${key}` : ''
+  return !key
+}
+
+const revalidate = (field) => {
+  if (errors[field]) validateField(field)
+  if (errors.banner && fields.every((f) => !errors[f])) errors.banner = ''
+}
 
 const resetForm = () => {
   Object.assign(form, emptyForm())
-  submitted.value = false
-  errorMessage.value = ''
+  fields.forEach((f) => (errors[f] = ''))
+  errors.banner = ''
 }
 
 const handleCancel = () => {
@@ -39,24 +65,19 @@ const handleCancel = () => {
   emit('cancel')
 }
 
-const handleSubmitEvent = () => {
-  submitted.value = true
-  successMessage.value = ''
-
-  const required = ['title', 'date', 'loc', 'desc']
-  if (required.some((field) => !form[field].trim())) {
-    errorMessage.value = 'manage.errorRequired'
+const handleSubmitEvent = async () => {
+  const results = fields.map(validateField)
+  if (results.includes(false)) {
+    errors.banner = 'manage.errorFields'
+    await nextTick()
+    document.getElementById(`ev-${fields[results.indexOf(false)]}`)?.focus()
     return
   }
-  if (!(Number(form.quota) >= 1)) {
-    errorMessage.value = 'manage.errorQuota'
-    return
-  }
-
+  errors.banner = ''
   emit('submit', { ...form })
-  resetForm()
-  successMessage.value = 'manage.success'
 }
+
+defineExpose({ resetForm })
 </script>
 
 <template>
@@ -64,90 +85,110 @@ const handleSubmitEvent = () => {
     <h3>{{ t('manage.formTitle') }}</h3>
     <p class="form-subtitle">{{ t('manage.formSubtitle') }}</p>
 
-    <div v-if="errorMessage" class="alert-box alert-error" role="alert">
-      <TriangleAlert :size="18" /> {{ t(errorMessage) }}
+    <div v-if="errors.banner" class="alert-box alert-error" role="alert">
+      <TriangleAlert :size="18" /> {{ t(errors.banner) }}
     </div>
-    <div v-if="successMessage" class="alert-box alert-success" role="status">
-      <PartyPopper :size="18" /> {{ t(successMessage) }}
+    <div v-else-if="serverError" class="alert-box alert-error" role="alert">
+      <TriangleAlert :size="18" /> {{ t(serverError.key, serverError.params) }}
     </div>
 
     <form class="event-form" novalidate @submit.prevent="handleSubmitEvent">
-      <div class="form-group">
-        <label for="ev-title">{{ t('manage.fieldTitle') }} *</label>
-        <input
-          id="ev-title"
-          v-model="form.title"
-          type="text"
-          :placeholder="t('manage.fieldTitlePh')"
-          :class="['form-input', { invalid: isEmpty('title') }]"
-          :aria-invalid="isEmpty('title')"
-        />
-      </div>
-
-      <div class="form-row">
+      <fieldset :disabled="submitting" class="form-fields">
         <div class="form-group">
-          <label for="ev-cat">{{ t('manage.fieldCategory') }} *</label>
-          <select id="ev-cat" v-model="form.cat" class="form-input">
-            <option v-for="cat in categories" :key="cat" :value="cat">
-              {{ t(`events.categories.${cat}`) }}
-            </option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="ev-date">{{ t('manage.fieldDate') }} *</label>
+          <label for="ev-title">{{ t('manage.fieldTitle') }} *</label>
           <input
-            id="ev-date"
-            v-model="form.date"
-            type="datetime-local"
-            :class="['form-input', { invalid: isEmpty('date') }]"
-            :aria-invalid="isEmpty('date')"
-          />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="ev-loc">{{ t('manage.fieldLoc') }} *</label>
-          <input
-            id="ev-loc"
-            v-model="form.loc"
+            id="ev-title"
+            v-model="form.title"
             type="text"
-            :placeholder="t('manage.fieldLocPh')"
-            :class="['form-input', { invalid: isEmpty('loc') }]"
-            :aria-invalid="isEmpty('loc')"
+            :placeholder="t('manage.fieldTitlePh')"
+            :class="['form-input', { invalid: errors.title }]"
+            :aria-invalid="Boolean(errors.title)"
+            @input="revalidate('title')"
           />
+          <span v-if="errors.title" class="field-error">{{ t(errors.title) }}</span>
         </div>
-        <div class="form-group">
-          <label for="ev-quota">{{ t('manage.fieldQuota') }}</label>
-          <input
-            id="ev-quota"
-            v-model.number="form.quota"
-            type="number"
-            min="1"
-            inputmode="numeric"
-            :class="['form-input', { invalid: quotaInvalid }]"
-            :aria-invalid="quotaInvalid"
-          />
-        </div>
-      </div>
 
-      <div class="form-group">
-        <label for="ev-desc">{{ t('manage.fieldDesc') }} *</label>
-        <textarea
-          id="ev-desc"
-          v-model="form.desc"
-          rows="4"
-          :placeholder="t('manage.fieldDescPh')"
-          :class="['form-input', { invalid: isEmpty('desc') }]"
-          :aria-invalid="isEmpty('desc')"
-        ></textarea>
-      </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ev-cat">{{ t('manage.fieldCategory') }} *</label>
+            <select id="ev-cat" v-model="form.cat" class="form-input">
+              <option v-for="cat in categories" :key="cat" :value="cat">
+                {{ t(`events.categories.${cat}`) }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ev-date">{{ t('manage.fieldDate') }} *</label>
+            <input
+              id="ev-date"
+              v-model="form.date"
+              type="datetime-local"
+              :class="['form-input', { invalid: errors.date }]"
+              :aria-invalid="Boolean(errors.date)"
+              @input="revalidate('date')"
+              @change="revalidate('date')"
+            />
+            <span v-if="errors.date" class="field-error">{{ t(errors.date) }}</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ev-loc">{{ t('manage.fieldLoc') }} *</label>
+            <input
+              id="ev-loc"
+              v-model="form.loc"
+              type="text"
+              :placeholder="t('manage.fieldLocPh')"
+              :class="['form-input', { invalid: errors.loc }]"
+              :aria-invalid="Boolean(errors.loc)"
+              @input="revalidate('loc')"
+            />
+            <span v-if="errors.loc" class="field-error">{{ t(errors.loc) }}</span>
+          </div>
+          <div class="form-group">
+            <label for="ev-quota">{{ t('manage.fieldQuota') }} *</label>
+            <input
+              id="ev-quota"
+              v-model.number="form.quota"
+              type="number"
+              min="1"
+              inputmode="numeric"
+              :class="['form-input', { invalid: errors.quota }]"
+              :aria-invalid="Boolean(errors.quota)"
+              @input="revalidate('quota')"
+            />
+            <span v-if="errors.quota" class="field-error">{{ t(errors.quota) }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ev-desc">{{ t('manage.fieldDesc') }} *</label>
+          <textarea
+            id="ev-desc"
+            v-model="form.desc"
+            rows="4"
+            :placeholder="t('manage.fieldDescPh')"
+            :class="['form-input', { invalid: errors.desc }]"
+            :aria-invalid="Boolean(errors.desc)"
+            @input="revalidate('desc')"
+          ></textarea>
+          <span v-if="errors.desc" class="field-error">{{ t(errors.desc) }}</span>
+        </div>
+      </fieldset>
 
       <div class="form-actions">
-        <button type="button" class="btn-secondary-action" @click="handleCancel">
+        <button
+          type="button"
+          class="btn-secondary-action"
+          :disabled="submitting"
+          @click="handleCancel"
+        >
           {{ t('manage.cancel') }}
         </button>
-        <AppButton variant="primary" type="submit">{{ t('manage.publish') }}</AppButton>
+        <AppButton variant="primary" type="submit" :loading="submitting">
+          {{ t('manage.publish') }}
+        </AppButton>
       </div>
     </form>
   </AppCard>
@@ -186,10 +227,19 @@ const handleSubmitEvent = () => {
   color: #c92a2a;
   border: 1px solid #ffa8a8;
 }
-.alert-success {
-  background: #d3f9d8;
-  color: #2b8a3e;
-  border: 1px solid #b2f2bb;
+
+.form-fields {
+  border: none;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.field-error {
+  font-size: 0.85rem;
+  color: #dc2626;
+  font-weight: 500;
 }
 
 .event-form {
@@ -215,7 +265,6 @@ const handleSubmitEvent = () => {
   color: var(--text-main);
 }
 
-/* font 16px biar iOS ga auto-zoom pas input difokus */
 .form-input {
   width: 100%;
   min-height: 44px;

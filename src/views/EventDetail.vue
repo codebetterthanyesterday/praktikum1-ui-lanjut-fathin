@@ -1,22 +1,42 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Calendar, MapPin, Users, CalendarX2, CircleCheck } from 'lucide-vue-next'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppCard from '@/components/ui/AppCard.vue'
+import ErrorState from '@/components/ui/ErrorState.vue'
 import { useEvents, seatsLeft } from '@/composables/useEvents'
 import { useLanguage } from '@/composables/useLanguage'
 
 const route = useRoute()
 const router = useRouter()
 const { t, formatDateTime } = useLanguage()
-const { getEventById, isUserRegistered } = useEvents()
+const { getEventById, isUserRegistered, fetchEventById } = useEvents()
 
 const event = computed(() => getEventById(route.params.id))
+
+const detailLoading = ref(false)
+const detailError = ref(null)
+
+const loadEvent = async () => {
+  detailError.value = null
+  if (event.value) return
+  detailLoading.value = true
+  try {
+    await fetchEventById(route.params.id)
+  } catch (err) {
+    detailError.value = err
+  } finally {
+    detailLoading.value = false
+  }
+}
+
+watch(() => route.params.id, loadEvent, { immediate: true })
+
+const isNotFound = computed(() => !detailError.value || detailError.value.key === 'api.notFound')
 const isRegistered = computed(() => (event.value ? isUserRegistered(event.value.id) : false))
 const seats = computed(() => (event.value ? seatsLeft(event.value) : 0))
 
-// urutan prioritas: selesai > sudah daftar > kuota habis > bisa daftar
 const status = computed(() => {
   if (!event.value) return null
   if (event.value.done) return 'ended'
@@ -50,7 +70,16 @@ const handleRegisterClick = () => {
       &larr; {{ t('eventDetail.back') }}
     </button>
 
-    <template v-if="event">
+    <div v-if="detailLoading && !event" class="detail-skeleton" role="status">
+      <div class="detail-header skeleton-block">
+        <span class="sk sk-tag skeleton-shimmer"></span>
+        <span class="sk sk-title skeleton-shimmer"></span>
+        <span class="sk sk-meta skeleton-shimmer"></span>
+      </div>
+      <p class="sr-only">{{ t('states.loading') }}</p>
+    </div>
+
+    <template v-else-if="event">
       <div class="detail-header">
         <div class="header-tags">
           <span class="event-tag">{{ t(`events.categories.${event.cat}`) }}</span>
@@ -124,6 +153,14 @@ const handleRegisterClick = () => {
       </div>
     </template>
 
+    <ErrorState
+      v-else-if="!isNotFound"
+      :title="t('states.errorTitle')"
+      :error="detailError"
+      :retrying="detailLoading"
+      @retry="loadEvent"
+    />
+
     <AppCard v-else class="not-found-card" :hoverable="false">
       <CalendarX2 :size="48" :stroke-width="1.5" class="not-found-icon" />
       <h2>{{ t('eventDetail.notFoundTitle') }}</h2>
@@ -136,7 +173,6 @@ const handleRegisterClick = () => {
 </template>
 
 <style scoped>
-/* ruang kosong di bawah buat bar daftar yang nempel */
 .event-detail-page.has-bar {
   padding-bottom: 140px;
 }
@@ -229,6 +265,28 @@ const handleRegisterClick = () => {
   flex-shrink: 0;
 }
 
+.skeleton-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.sk {
+  display: block;
+  border-radius: 8px;
+}
+.sk-tag {
+  width: 120px;
+  height: 26px;
+}
+.sk-title {
+  width: 70%;
+  height: 40px;
+}
+.sk-meta {
+  width: 50%;
+  height: 18px;
+}
+
 .not-found-card {
   display: flex;
   flex-direction: column;
@@ -269,7 +327,6 @@ const handleRegisterClick = () => {
   font-size: 1rem;
 }
 
-/* di hp kartu tiket jadi bar di bawah layar, jadi tombol daftar selalu kelihatan */
 .sidebar {
   position: fixed;
   left: var(--space-4);
@@ -321,7 +378,6 @@ const handleRegisterClick = () => {
   width: 100%;
 }
 
-/* di hp yang muncul cuma link ke tiket, tombol "sudah terdaftar"-nya disembunyiin biar bar ga tinggi */
 .registered-action-group {
   display: flex;
   flex-direction: column;

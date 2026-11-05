@@ -1,115 +1,197 @@
 import { ref, computed, watch } from 'vue'
+import { request, ApiError } from '@/services/http'
 
-const EVENTS_KEY = 'gatherly_events'
 const REGISTRATIONS_KEY = 'gatherly_user_registrations'
 
 export const categories = ['workshop', 'meetup', 'competition', 'seminar', 'conference']
 
-const load = (key) => {
+try {
+  localStorage.removeItem('gatherly_events')
+} catch {}
+
+const loadRegistrations = () => {
   try {
-    const saved = JSON.parse(localStorage.getItem(key))
+    const saved = JSON.parse(localStorage.getItem(REGISTRATIONS_KEY))
     return Array.isArray(saved) ? saved : []
   } catch {
     return []
   }
 }
 
-const persist = (key, value) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(value))
-  } catch {
-    // storage penuh / diblokir, ya sudah
+const pad = (n) => String(n).padStart(2, '0')
+const toLocalInput = (d) =>
+  `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+
+// tanggal dari server bisa "2026-11-15T09:00", ISO pakai Z, atau teks "Nov 15, 2026 • 09:00 AM"
+const normalizeDate = (value) => {
+  const text = String(value ?? '').trim()
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(text)) return text.slice(0, 16)
+  const parsed = new Date(text.replace('•', ''))
+  return Number.isNaN(parsed.getTime()) ? text : toLocalInput(parsed)
+}
+
+const normalizeEvent = (raw) => {
+  const cat = String(raw.cat ?? '')
+    .trim()
+    .toLowerCase()
+  return {
+    id: String(raw.id),
+    title: String(raw.title ?? ''),
+    cat: categories.includes(cat) ? cat : 'other',
+    date: normalizeDate(raw.date),
+    loc: String(raw.loc ?? ''),
+    quota: Math.max(0, Number(raw.quota) || 0),
+    booked: Math.max(0, Number(raw.booked) || 0),
+    desc: String(raw.desc ?? ''),
+    done: raw.done === true || raw.done === 'true',
   }
 }
 
-// ditaruh di luar useEvents() supaya semua halaman pakai data yang sama
-const events = ref(load(EVENTS_KEY))
-const userRegistrations = ref(load(REGISTRATIONS_KEY))
+export const seatsLeft = (event) => Math.max(0, event.quota - (event.booked ?? 0))
 
-// deep: true biar perubahan di dalam item (done, booked) juga ikut kesimpan
-watch(events, (value) => persist(EVENTS_KEY, value), { deep: true })
-watch(userRegistrations, (value) => persist(REGISTRATIONS_KEY, value), { deep: true })
+// ditaruh di luar useEvents() supaya semua halaman pakai data yang sama
+const events = ref([])
+const status = ref('idle')
+const error = ref(null)
+const userRegistrations = ref(loadRegistrations())
+
+watch(
+  userRegistrations,
+  (value) => {
+    try {
+      localStorage.setItem(REGISTRATIONS_KEY, JSON.stringify(value))
+    } catch {}
+  },
+  { deep: true },
+)
 
 if (typeof window !== 'undefined') {
   window.addEventListener('storage', (e) => {
-    if (e.key === EVENTS_KEY) events.value = load(EVENTS_KEY)
-    if (e.key === REGISTRATIONS_KEY) userRegistrations.value = load(REGISTRATIONS_KEY)
+    if (e.key === REGISTRATIONS_KEY) userRegistrations.value = loadRegistrations()
   })
 }
 
-const findEvent = (id) => events.value.find((e) => e.id === Number(id))
+const sameId = (a, b) => String(a) === String(b)
+const findEvent = (id) => events.value.find((e) => sameId(e.id, id))
 
-// quota = kapasitas, booked = yang sudah daftar. data dari modul 4 belum punya booked
-export const seatsLeft = (event) => Math.max(0, event.quota - (event.booked ?? 0))
+const upsertEvent = (raw) => {
+  const event = normalizeEvent(raw)
+  const index = events.value.findIndex((e) => e.id === event.id)
+  if (index === -1) events.value.push(event)
+  else events.value[index] = event
+  return event
+}
 
-const makeBookingCode = () => {
-  let code
-  do {
-    code = 'GTH-' + Math.random().toString(36).slice(2, 8).toUpperCase()
-  } while (userRegistrations.value.some((r) => r.bookingCode === code))
-  return code
+let requestSeq = 0
+
+const fetchEvents = () => {
+  const seq = ++requestSeq
+  status.value = 'loading'
+  error.value = null
+
+  return request('/events')
+    .then((data) => {
+      if (seq !== requestSeq) return
+      events.value = (Array.isArray(data) ? data : []).map(normalizeEvent)
+      userRegistrations.value = userRegistrations.value.filter((r) =>
+        events.value.some((e) => sameId(e.id, r.eventId)),
+      )
+      status.value = 'success'
+    })
+    .catch((err) => {
+      if (seq !== requestSeq) return
+      error.value = err instanceof ApiError ? err : new ApiError('api.network')
+      status.value = 'error'
+    })
 }
 
 export function useEvents() {
+  const loading = computed(() => status.value === 'loading')
+  const loaded = computed(() => status.value === 'success')
+
   const totalEvents = computed(() => events.value.length)
   const activeEvents = computed(() => events.value.filter((e) => !e.done))
   const completedEvents = computed(() => events.value.filter((e) => e.done))
 
-  // tiket yang acaranya masih ada di sistem
   const myRegistrations = computed(() =>
-    userRegistrations.value.filter((r) => events.value.some((e) => e.id === r.eventId)),
+    userRegistrations.value.filter((r) => events.value.some((e) => sameId(e.id, r.eventId))),
   )
-  const totalRegistrations = computed(() => myRegistrations.value.length)
 
-  const createEvent = (eventData) => {
-    let id = Date.now()
-    while (events.value.some((e) => e.id === id)) id++
+  const getEventById = (id) => findEvent(id)
 
-    const newEvent = {
-      id,
+  const fetchEventById = async (id, { force = false } = {}) => {
+    if (!force) {
+      const existing = findEvent(id)
+      if (existing) return existing
+    }
+    try {
+      return upsertEvent(await request(`/events/${encodeURIComponent(id)}`))
+    } catch (err) {
+      if (err.key === 'api.notFound') {
+        events.value = events.value.filter((e) => !sameId(e.id, id))
+        userRegistrations.value = userRegistrations.value.filter((r) => !sameId(r.eventId, id))
+      }
+      throw err
+    }
+  }
+
+  const createEvent = async (eventData) => {
+    const payload = {
       title: eventData.title.trim(),
+      cat: eventData.cat,
       date: eventData.date,
       loc: eventData.loc.trim(),
-      cat: eventData.cat,
       quota: Number(eventData.quota) || 100,
       booked: 0,
       desc: eventData.desc.trim(),
       done: false,
     }
-    events.value.unshift(newEvent)
-    return newEvent
+    const created = normalizeEvent(await request('/events', { method: 'POST', body: payload }))
+    events.value.unshift(created)
+    return created
   }
 
-  const completeEvent = (id) => {
-    const target = findEvent(id)
-    if (target) target.done = true
-  }
+  const updateEvent = async (id, changes) =>
+    upsertEvent(
+      await request(`/events/${encodeURIComponent(id)}`, { method: 'PUT', body: changes }),
+    )
 
-  // hapus acara sekalian tiket-tiketnya, biar ga ada tiket "hantu"
-  const deleteEvent = (id) => {
-    const numId = Number(id)
-    events.value = events.value.filter((e) => e.id !== numId)
-    userRegistrations.value = userRegistrations.value.filter((r) => r.eventId !== numId)
-  }
+  const completeEvent = (id) => updateEvent(id, { done: true })
 
-  // id dari URL selalu string, jadi diubah ke Number dulu
-  const getEventById = (id) => findEvent(id)
+  const deleteEvent = async (id) => {
+    try {
+      await request(`/events/${encodeURIComponent(id)}`, { method: 'DELETE' })
+    } catch (err) {
+      if (err.key !== 'api.notFound') throw err
+    }
+    events.value = events.value.filter((e) => !sameId(e.id, id))
+    userRegistrations.value = userRegistrations.value.filter((r) => !sameId(r.eventId, id))
+  }
 
   const getRegistrationByEventId = (eventId) =>
-    userRegistrations.value.find((r) => r.eventId === Number(eventId))
+    userRegistrations.value.find((r) => sameId(r.eventId, eventId))
 
   const isUserRegistered = (eventId) =>
     Boolean(findEvent(eventId) && getRegistrationByEventId(eventId))
 
-  const registerAttendee = (eventId, participant) => {
-    const event = findEvent(eventId)
-    if (!event || event.done || seatsLeft(event) <= 0 || isUserRegistered(eventId)) return null
+  const makeBookingCode = () => {
+    let code
+    do {
+      code = 'GTH-' + Math.random().toString(36).slice(2, 8).toUpperCase()
+    } while (userRegistrations.value.some((r) => r.bookingCode === code))
+    return code
+  }
 
-    let id = Date.now()
-    while (userRegistrations.value.some((r) => r.id === id)) id++
+  const registerAttendee = async (eventId, participant) => {
+    if (isUserRegistered(eventId)) throw new ApiError('register.errorFailed')
+
+    const event = await fetchEventById(eventId, { force: true })
+    if (event.done || seatsLeft(event) <= 0) throw new ApiError('register.errorFailed')
+
+    await updateEvent(event.id, { booked: event.booked + 1 })
 
     const record = {
-      id,
+      id: Date.now(),
       eventId: event.id,
       bookingCode: makeBookingCode(),
       registeredAt: new Date().toISOString(),
@@ -119,40 +201,33 @@ export function useEvents() {
       dob: participant.dob,
       reason: participant.reason.trim(),
     }
-
-    event.booked = (event.booked ?? 0) + 1
     userRegistrations.value.unshift(record)
     return record
   }
 
-  const cancelRegistration = (eventId) => {
-    const index = userRegistrations.value.findIndex((r) => r.eventId === Number(eventId))
+  const cancelRegistration = async (eventId) => {
+    const index = userRegistrations.value.findIndex((r) => sameId(r.eventId, eventId))
     if (index === -1) return false
 
-    userRegistrations.value.splice(index, 1)
     const event = findEvent(eventId)
-    if (event) event.booked = Math.max(0, (event.booked ?? 0) - 1)
+    if (event) await updateEvent(event.id, { booked: Math.max(0, event.booked - 1) })
+
+    userRegistrations.value.splice(index, 1)
     return true
-  }
-
-  const clearAllEvents = () => {
-    events.value = []
-    userRegistrations.value = []
-  }
-
-  const clearAllRegistrations = () => {
-    userRegistrations.value = []
-    events.value.forEach((e) => (e.booked = 0))
   }
 
   return {
     events,
+    loading,
+    loaded,
+    error,
     totalEvents,
     activeEvents,
     completedEvents,
     userRegistrations,
     myRegistrations,
-    totalRegistrations,
+    fetchEvents,
+    fetchEventById,
     createEvent,
     completeEvent,
     deleteEvent,
@@ -161,7 +236,5 @@ export function useEvents() {
     isUserRegistered,
     getRegistrationByEventId,
     cancelRegistration,
-    clearAllEvents,
-    clearAllRegistrations,
   }
 }

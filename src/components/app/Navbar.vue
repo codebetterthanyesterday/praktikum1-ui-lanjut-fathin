@@ -53,7 +53,6 @@ watch(
   },
 )
 
-// halaman di belakang menu jangan ikut ke-scroll
 watch(isMobileMenuOpen, (open) => {
   document.body.style.overflow = open ? 'hidden' : ''
 })

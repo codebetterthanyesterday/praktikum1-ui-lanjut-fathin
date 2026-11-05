@@ -15,7 +15,6 @@ const props = defineProps({
 
 const { t, formatDateTime } = useLanguage()
 
-// nama & judul acara dibikin tebal tanpa v-html (isinya dari input user)
 const greeting = computed(() =>
   t('register.greeting', { name: '\u0000name\u0000', event: '\u0000event\u0000' })
     .split('\u0000')

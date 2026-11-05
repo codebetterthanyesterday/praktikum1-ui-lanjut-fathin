@@ -144,7 +144,6 @@ const { t, formatDateTime } = useLanguage()
   font-weight: 700;
 }
 
-/* di hp deskripsinya disembunyiin, biar form langsung kelihatan */
 .summary-desc {
   display: none;
 }

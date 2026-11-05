@@ -60,6 +60,7 @@ const { t, formatDateTime } = useLanguage()
 
 .event-meta {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: var(--space-2);
@@ -88,6 +89,7 @@ const { t, formatDateTime } = useLanguage()
 }
 
 .event-date {
+  white-space: nowrap;
   background: var(--primary-soft);
   color: var(--primary);
   padding: var(--space-1) var(--space-2);

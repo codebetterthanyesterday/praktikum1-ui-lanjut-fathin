@@ -1,20 +1,20 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Printer, TicketX } from 'lucide-vue-next'
+import { Printer, TicketX, TriangleAlert } from 'lucide-vue-next'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppCard from '@/components/ui/AppCard.vue'
 import AppModal from '@/components/ui/AppModal.vue'
+import ErrorState from '@/components/ui/ErrorState.vue'
 import { useEvents } from '@/composables/useEvents'
 import { useLanguage } from '@/composables/useLanguage'
 
 const route = useRoute()
 const router = useRouter()
-const { getEventById, getRegistrationByEventId, cancelRegistration } = useEvents()
+const { getEventById, getRegistrationByEventId, cancelRegistration, fetchEventById } = useEvents()
 const { t, formatDate, formatDateTime } = useLanguage()
 
 const event = computed(() => getEventById(route.params.id))
-// tiket cuma valid kalau acaranya masih ada di sistem
 const ticket = computed(() => (event.value ? getRegistrationByEventId(event.value.id) : null))
 
 // registeredAt itu timestamp UTC, diubah ke tanggal lokal dulu biar ga geser sehari
@@ -22,12 +22,45 @@ const registeredDate = computed(() =>
   ticket.value ? new Date(ticket.value.registeredAt).toLocaleDateString('en-CA') : '',
 )
 
-const isCancelModalOpen = ref(false)
+const pageLoading = ref(false)
+const pageError = ref(null)
 
-const handleConfirmCancel = () => {
-  cancelRegistration(event.value.id)
+const loadEvent = async () => {
+  pageError.value = null
+  if (!getRegistrationByEventId(route.params.id)) return
+  pageLoading.value = true
+  try {
+    await fetchEventById(route.params.id, { force: true })
+  } catch (err) {
+    if (err.key !== 'api.notFound') pageError.value = err
+  } finally {
+    pageLoading.value = false
+  }
+}
+
+watch(() => route.params.id, loadEvent, { immediate: true })
+
+const isCancelModalOpen = ref(false)
+const cancelling = ref(false)
+const cancelError = ref(null)
+
+const closeCancelModal = () => {
   isCancelModalOpen.value = false
-  router.push('/browse/your-events')
+  cancelError.value = null
+}
+
+const handleConfirmCancel = async () => {
+  cancelling.value = true
+  cancelError.value = null
+  try {
+    await cancelRegistration(event.value.id)
+    isCancelModalOpen.value = false
+    router.push('/browse/your-events')
+  } catch (err) {
+    cancelError.value = err
+  } finally {
+    cancelling.value = false
+  }
 }
 
 const printTicket = () => window.print()
@@ -39,7 +72,23 @@ const printTicket = () => window.print()
       &larr; {{ t('ticket.back') }}
     </RouterLink>
 
-    <article v-if="ticket" class="ticket-receipt-card">
+    <div
+      v-if="pageLoading && !ticket"
+      class="skeleton-card skeleton-shimmer receipt-skeleton"
+      role="status"
+    >
+      <span class="sr-only">{{ t('states.loading') }}</span>
+    </div>
+
+    <ErrorState
+      v-else-if="pageError && !ticket"
+      :title="t('states.ticketsErrorTitle')"
+      :error="pageError"
+      :retrying="pageLoading"
+      @retry="loadEvent"
+    />
+
+    <article v-else-if="ticket" class="ticket-receipt-card">
       <header class="receipt-header">
         <div class="header-status">
           <span :class="['status-badge', event.done ? 'badge-concluded' : 'badge-confirmed']">
@@ -139,13 +188,22 @@ const printTicket = () => window.print()
       variant="danger"
       :cancel-text="t('yourEvents.cancelKeep')"
       :confirm-text="t('yourEvents.cancelYes')"
+      :loading="cancelling"
       @confirm="handleConfirmCancel"
-      @close="isCancelModalOpen = false"
-    />
+      @close="closeCancelModal"
+    >
+      <p v-if="cancelError" class="modal-error" role="alert">
+        <TriangleAlert :size="16" /> {{ t(cancelError.key, cancelError.params) }}
+      </p>
+    </AppModal>
   </div>
 </template>
 
 <style scoped>
+.receipt-skeleton {
+  min-height: 520px;
+}
+
 .ticket-receipt-page {
   max-width: 760px;
   margin: 0 auto;

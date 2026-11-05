@@ -1,17 +1,28 @@
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
-import { Plus, CalendarDays, Inbox, Archive } from 'lucide-vue-next'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { Plus, CalendarDays, Inbox, Archive, PartyPopper, TriangleAlert } from 'lucide-vue-next'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import SkeletonCard from '@/components/ui/SkeletonCard.vue'
+import ErrorState from '@/components/ui/ErrorState.vue'
 import OrganizerEventCard from '@/components/event/OrganizerEventCard.vue'
 import EventCreateForm from '@/components/event/EventCreateForm.vue'
 import { useEvents } from '@/composables/useEvents'
 import { useLanguage } from '@/composables/useLanguage'
 
-const { activeEvents, completedEvents, createEvent, completeEvent, deleteEvent } = useEvents()
+const {
+  activeEvents,
+  completedEvents,
+  createEvent,
+  completeEvent,
+  deleteEvent,
+  fetchEvents,
+  loading,
+  loaded,
+  error,
+} = useEvents()
 const { t } = useLanguage()
 
-// 'active' | 'create' | 'completed'
 const currentTab = ref('active')
 
 const tabs = computed(() => [
@@ -28,20 +39,40 @@ const tabs = computed(() => [
   },
 ])
 
-let switchTimer = null
+onMounted(fetchEvents)
 
-// pesan sukses tampil sebentar di form, habis itu balik ke tab aktif
-const handleCreateEvent = (eventData) => {
-  createEvent(eventData)
-  clearTimeout(switchTimer)
-  switchTimer = setTimeout(() => {
+const showSkeleton = computed(() => !loaded.value && !error.value)
+
+const createFormRef = ref(null)
+const isSubmitting = ref(false)
+const submitError = ref(null)
+const successMessage = ref('')
+let successTimer = null
+
+const handleCreateEvent = async (eventData) => {
+  isSubmitting.value = true
+  submitError.value = null
+  try {
+    const created = await createEvent(eventData)
+    createFormRef.value?.resetForm()
     currentTab.value = 'active'
-  }, 1000)
+    successMessage.value = t('manage.created', { title: created.title })
+    clearTimeout(successTimer)
+    successTimer = setTimeout(() => (successMessage.value = ''), 4000)
+  } catch (err) {
+    submitError.value = err
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
-onUnmounted(() => clearTimeout(switchTimer))
+const openCreateTab = () => {
+  submitError.value = null
+  currentTab.value = 'create'
+}
 
-// satu modal dipakai bareng buat complete & delete
+onUnmounted(() => clearTimeout(successTimer))
+
 const isModalOpen = ref(false)
 const modalAction = ref('complete')
 const selectedEvent = ref(null)
@@ -52,17 +83,28 @@ const openModal = (action, event) => {
   isModalOpen.value = true
 }
 
+const isProcessingAction = ref(false)
+const actionError = ref(null)
+
 const closeModal = () => {
   isModalOpen.value = false
   selectedEvent.value = null
+  actionError.value = null
 }
 
-const handleConfirmModal = () => {
-  if (selectedEvent.value) {
-    if (modalAction.value === 'complete') completeEvent(selectedEvent.value.id)
-    else deleteEvent(selectedEvent.value.id)
+const handleConfirmModal = async () => {
+  if (!selectedEvent.value) return
+  isProcessingAction.value = true
+  actionError.value = null
+  try {
+    if (modalAction.value === 'complete') await completeEvent(selectedEvent.value.id)
+    else await deleteEvent(selectedEvent.value.id)
+    closeModal()
+  } catch (err) {
+    actionError.value = err
+  } finally {
+    isProcessingAction.value = false
   }
-  closeModal()
 }
 
 const modalText = computed(() => {
@@ -90,7 +132,7 @@ const modalText = computed(() => {
         <h2>{{ t('manage.heading') }}</h2>
         <p class="subtitle">{{ t('manage.subtitle') }}</p>
       </div>
-      <AppButton variant="primary" class="btn-header" @click="currentTab = 'create'">
+      <AppButton variant="primary" class="btn-header" @click="openCreateTab">
         <Plus :size="18" class="btn-icon" /> {{ t('manage.createNew') }}
       </AppButton>
     </div>
@@ -110,8 +152,22 @@ const modalText = computed(() => {
       </button>
     </div>
 
+    <div v-if="successMessage" class="toast-success" role="status">
+      <PartyPopper :size="18" /> {{ successMessage }}
+    </div>
+
     <section v-if="currentTab === 'active'" class="tab-pane" role="tabpanel">
-      <div v-if="activeEvents.length > 0" class="events-grid">
+      <div v-if="showSkeleton" class="events-grid" :aria-label="t('states.loading')">
+        <SkeletonCard v-for="n in 3" :key="n" />
+      </div>
+      <ErrorState
+        v-else-if="error"
+        :title="t('states.errorTitle')"
+        :error="error"
+        :retrying="loading"
+        @retry="fetchEvents"
+      />
+      <div v-else-if="activeEvents.length > 0" class="events-grid">
         <OrganizerEventCard
           v-for="item in activeEvents"
           :key="item.id"
@@ -125,18 +181,34 @@ const modalText = computed(() => {
         <Inbox :size="48" :stroke-width="1.5" class="empty-icon" />
         <h3>{{ t('manage.emptyActiveTitle') }}</h3>
         <p>{{ t('manage.emptyActiveDesc') }}</p>
-        <AppButton variant="primary" @click="currentTab = 'create'">
+        <AppButton variant="primary" @click="openCreateTab">
           {{ t('manage.emptyActiveBtn') }}
         </AppButton>
       </div>
     </section>
 
     <section v-if="currentTab === 'create'" class="tab-pane" role="tabpanel">
-      <EventCreateForm @submit="handleCreateEvent" @cancel="currentTab = 'active'" />
+      <EventCreateForm
+        ref="createFormRef"
+        :submitting="isSubmitting"
+        :server-error="submitError"
+        @submit="handleCreateEvent"
+        @cancel="currentTab = 'active'"
+      />
     </section>
 
     <section v-if="currentTab === 'completed'" class="tab-pane" role="tabpanel">
-      <div v-if="completedEvents.length > 0" class="events-grid">
+      <div v-if="showSkeleton" class="events-grid" :aria-label="t('states.loading')">
+        <SkeletonCard v-for="n in 3" :key="n" />
+      </div>
+      <ErrorState
+        v-else-if="error"
+        :title="t('states.errorTitle')"
+        :error="error"
+        :retrying="loading"
+        @retry="fetchEvents"
+      />
+      <div v-else-if="completedEvents.length > 0" class="events-grid">
         <OrganizerEventCard
           v-for="item in completedEvents"
           :key="item.id"
@@ -160,13 +232,36 @@ const modalText = computed(() => {
       :confirm-text="modalText.confirm"
       :cancel-text="t('manage.cancel')"
       :variant="modalText.variant"
+      :loading="isProcessingAction"
       @confirm="handleConfirmModal"
       @close="closeModal"
-    />
+    >
+      <p v-if="actionError" class="modal-error" role="alert">
+        <TriangleAlert :size="16" />
+        {{ t('manage.actionFailed') }} {{ t(actionError.key, actionError.params) }}
+      </p>
+    </AppModal>
   </div>
 </template>
 
 <style scoped>
+.toast-success {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: #d3f9d8;
+  color: #2b8a3e;
+  border: 1px solid #b2f2bb;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: var(--space-6);
+  overflow-wrap: anywhere;
+}
+.toast-success svg {
+  flex-shrink: 0;
+}
+
 .event-management-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -194,7 +289,6 @@ const modalText = computed(() => {
   vertical-align: middle;
 }
 
-/* di hp tab-nya bisa digeser ke samping */
 .tabs-container {
   display: flex;
   gap: var(--space-2);

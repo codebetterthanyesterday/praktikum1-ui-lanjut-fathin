@@ -1,25 +1,55 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { Clock, MapPin, User, Ticket } from 'lucide-vue-next'
+import { ref, computed, onMounted } from 'vue'
+import { Clock, MapPin, User, Ticket, TriangleAlert } from 'lucide-vue-next'
 import AppCard from '@/components/ui/AppCard.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppModal from '@/components/ui/AppModal.vue'
+import SkeletonCard from '@/components/ui/SkeletonCard.vue'
+import ErrorState from '@/components/ui/ErrorState.vue'
 import { useEvents } from '@/composables/useEvents'
 import { useLanguage } from '@/composables/useLanguage'
 
-const { myRegistrations, getEventById, cancelRegistration } = useEvents()
+const {
+  myRegistrations,
+  userRegistrations,
+  getEventById,
+  cancelRegistration,
+  fetchEvents,
+  loading,
+  loaded,
+  error,
+} = useEvents()
+
+onMounted(fetchEvents)
+
+const showSkeleton = computed(() => !loaded.value && !error.value)
 const { t, formatDateTime } = useLanguage()
 
-// info acara selalu diambil dari data acara terbaru
 const tickets = computed(() =>
   myRegistrations.value.map((reg) => ({ ...reg, event: getEventById(reg.eventId) })),
 )
 
 const ticketToCancel = ref(null)
+const cancelling = ref(false)
+const cancelError = ref(null)
 
-const handleConfirmCancel = () => {
-  if (ticketToCancel.value) cancelRegistration(ticketToCancel.value.eventId)
+const closeCancelModal = () => {
   ticketToCancel.value = null
+  cancelError.value = null
+}
+
+const handleConfirmCancel = async () => {
+  if (!ticketToCancel.value) return
+  cancelling.value = true
+  cancelError.value = null
+  try {
+    await cancelRegistration(ticketToCancel.value.eventId)
+    closeCancelModal()
+  } catch (err) {
+    cancelError.value = err
+  } finally {
+    cancelling.value = false
+  }
 }
 </script>
 
@@ -30,7 +60,19 @@ const handleConfirmCancel = () => {
       <p class="page-desc">{{ t('yourEvents.desc') }}</p>
     </header>
 
-    <div v-if="tickets.length === 0" class="empty-state">
+    <div v-if="showSkeleton" class="tickets-grid" :aria-label="t('states.loading')">
+      <SkeletonCard v-for="n in Math.min(Math.max(userRegistrations.length, 1), 3)" :key="n" />
+    </div>
+
+    <ErrorState
+      v-else-if="error"
+      :title="t('states.ticketsErrorTitle')"
+      :error="error"
+      :retrying="loading"
+      @retry="fetchEvents"
+    />
+
+    <div v-else-if="tickets.length === 0" class="empty-state">
       <Ticket :size="48" :stroke-width="1.5" class="empty-icon" />
       <span class="empty-badge">{{ t('yourEvents.emptyBadge') }}</span>
       <h3>{{ t('yourEvents.emptyTitle') }}</h3>
@@ -106,9 +148,14 @@ const handleConfirmCancel = () => {
       variant="danger"
       :cancel-text="t('yourEvents.cancelKeep')"
       :confirm-text="t('yourEvents.cancelYes')"
+      :loading="cancelling"
       @confirm="handleConfirmCancel"
-      @close="ticketToCancel = null"
-    />
+      @close="closeCancelModal"
+    >
+      <p v-if="cancelError" class="modal-error" role="alert">
+        <TriangleAlert :size="16" /> {{ t(cancelError.key, cancelError.params) }}
+      </p>
+    </AppModal>
   </div>
 </template>
 
@@ -275,15 +322,6 @@ const handleConfirmCancel = () => {
 }
 .meta-row dd {
   overflow-wrap: anywhere;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
 }
 
 .card-bottom {

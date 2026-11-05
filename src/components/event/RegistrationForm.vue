@@ -13,7 +13,7 @@ const props = defineProps({
     required: true,
   },
 })
-const emit = defineEmits(['success', 'cancel'])
+const emit = defineEmits(['submitting', 'success', 'cancel'])
 
 const router = useRouter()
 const { registerAttendee } = useEvents()
@@ -22,9 +22,10 @@ const { t } = useLanguage()
 const fields = ['fullName', 'email', 'phone', 'dob', 'reason']
 
 const form = reactive({ fullName: '', email: '', phone: '', dob: '', reason: '' })
-// isinya key terjemahan, biar pesan error ikut ganti bahasa
 const errors = reactive({ fullName: '', email: '', phone: '', dob: '', reason: '' })
 const errorMessage = ref('')
+const errorParams = ref({})
+const submitting = ref(false)
 const submitted = ref(false)
 
 const today = new Date().toLocaleDateString('en-CA')
@@ -53,7 +54,6 @@ const validateField = (field) => {
   return !key
 }
 
-// kalau kolomnya sudah pernah error, langsung dicek ulang tiap diketik
 const revalidate = (field) => {
   if (errors[field]) validateField(field)
   if (errorMessage.value && fields.every((f) => !errors[f])) errorMessage.value = ''
@@ -68,17 +68,22 @@ const handleSubmit = async () => {
     return
   }
 
-  const record = registerAttendee(props.event.id, form)
-  if (!record) {
-    errorMessage.value = 'register.errorFailed'
-    return
-  }
+  submitting.value = true
   errorMessage.value = ''
-  submitted.value = true
-  emit('success', record)
+  emit('submitting', true)
+  try {
+    const record = await registerAttendee(props.event.id, form)
+    submitted.value = true
+    emit('success', record)
+  } catch (err) {
+    errorMessage.value = err.key ?? 'api.network'
+    errorParams.value = err.params ?? {}
+    emit('submitting', false)
+  } finally {
+    submitting.value = false
+  }
 }
 
-// jaga-jaga biar ketikan user ga hilang kalau ga sengaja keluar
 const isDiscardModalOpen = ref(false)
 let allowLeave = false
 let pendingPath = null
@@ -123,7 +128,7 @@ onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
       </header>
 
       <div v-if="errorMessage" class="error-banner" role="alert">
-        <TriangleAlert :size="18" /> {{ t(errorMessage) }}
+        <TriangleAlert :size="18" /> {{ t(errorMessage, errorParams) }}
       </div>
 
       <form class="attendee-form" novalidate @submit.prevent="handleSubmit">
@@ -244,10 +249,23 @@ onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
         </div>
 
         <div class="form-actions">
-          <button type="button" class="btn-cancel-form" @click="handleCancelClick">
+          <button
+            type="button"
+            class="btn-cancel-form"
+            :disabled="submitting"
+            @click="handleCancelClick"
+          >
             {{ t('register.cancel') }}
           </button>
-          <button type="submit" class="btn-submit-form">{{ t('register.submit') }}</button>
+          <button
+            type="submit"
+            class="btn-submit-form"
+            :disabled="submitting"
+            :aria-busy="submitting || undefined"
+          >
+            <span v-if="submitting" class="btn-spinner" aria-hidden="true"></span>
+            {{ t('register.submit') }}
+          </button>
         </div>
       </form>
     </AppCard>
@@ -329,7 +347,6 @@ onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
   color: var(--danger);
 }
 
-/* font 16px biar iOS ga auto-zoom pas input difokus */
 .form-input {
   width: 100%;
   min-height: 44px;
@@ -420,6 +437,11 @@ onUnmounted(() => window.removeEventListener('beforeunload', onBeforeUnload))
 }
 .btn-submit-form:hover {
   background: var(--primary-hover);
+}
+.btn-submit-form:disabled,
+.btn-cancel-form:disabled {
+  opacity: 0.75;
+  cursor: wait;
 }
 .btn-submit-form:active {
   transform: scale(0.98);

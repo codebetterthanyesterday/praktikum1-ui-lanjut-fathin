@@ -48,8 +48,6 @@ const pageTitle = computed(() => t(route.meta.titleKey || 'dashboard.title'))
 </template>
 
 <style scoped>
-/* tinggi dikunci segini biar yang scroll cuma bagian pane.
-   di hp rail-nya jadi tab bar di bawah (column-reverse) */
 .dashboard-layout {
   display: flex;
   flex-direction: column-reverse;

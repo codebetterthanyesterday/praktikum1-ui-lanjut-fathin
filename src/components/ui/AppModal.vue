@@ -40,13 +40,16 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
 })
 const emit = defineEmits(['confirm', 'close'])
 
 const icons = { danger: TriangleAlert, primary: Info, success: CircleCheck }
 const icon = computed(() => icons[props.variant])
 
-// id unik, soalnya bisa ada lebih dari satu modal di satu halaman
 const uid = useId()
 const titleId = `${uid}-title`
 const messageId = `${uid}-message`
@@ -54,11 +57,14 @@ const messageId = `${uid}-message`
 const card = ref(null)
 let lastFocused = null
 
-const onKeydown = (e) => {
-  if (e.key === 'Escape') emit('close')
+const requestClose = () => {
+  if (!props.loading) emit('close')
 }
 
-// fokus ke tombol yang paling aman dulu (Cancel) biar ga kepencet confirm
+const onKeydown = (e) => {
+  if (e.key === 'Escape') requestClose()
+}
+
 const focusFirst = () => {
   const el =
     card.value?.querySelector('[data-autofocus]') ||
@@ -94,7 +100,7 @@ onUnmounted(() => {
 <template>
   <Teleport to="body">
     <Transition name="modal-fade">
-      <div v-if="isOpen" class="modal-overlay" @click.self="$emit('close')">
+      <div v-if="isOpen" class="modal-overlay" @click.self="requestClose">
         <div
           ref="card"
           :class="['modal-card', `modal-${variant}`]"
@@ -119,14 +125,23 @@ onUnmounted(() => {
 
           <div class="modal-footer">
             <slot name="footer">
-              <button v-if="showCancel" type="button" class="btn-cancel" @click="$emit('close')">
+              <button
+                v-if="showCancel"
+                type="button"
+                class="btn-cancel"
+                :disabled="loading"
+                @click="requestClose"
+              >
                 {{ cancelText }}
               </button>
               <button
                 type="button"
                 :class="['btn-confirm', `btn-${variant}`]"
+                :disabled="loading"
+                :aria-busy="loading || undefined"
                 @click="$emit('confirm')"
               >
+                <span v-if="loading" class="btn-spinner" aria-hidden="true"></span>
                 {{ confirmText }}
               </button>
             </slot>
@@ -295,6 +310,11 @@ onUnmounted(() => {
 }
 .btn-confirm.btn-success:hover {
   background: #15803d;
+}
+.btn-cancel:disabled,
+.btn-confirm:disabled {
+  opacity: 0.7;
+  cursor: wait;
 }
 .btn-confirm:active {
   transform: scale(0.98);

@@ -13,10 +13,9 @@ const translations = {
       category: 'Category',
       contact: 'Contact',
       dashboard: 'Organizer Dashboard',
-      eventManagement: 'Event Management',
       yourEvents: 'Your Events',
       registerEvent: 'Register Event',
-      ticketReceipt: 'Ticket Receipt'
+      ticketReceipt: 'Ticket Receipt',
     },
     dashboard: {
       brand: 'Gatherly Organizer',
@@ -46,7 +45,7 @@ const translations = {
       statusActive: 'Active',
       statusCompleted: 'Completed',
       tableEmpty: 'No events recorded in the system yet.',
-      createFirst: 'Create First Event'
+      createFirst: 'Create First Event',
     },
     manage: {
       heading: 'Event Management Control',
@@ -60,14 +59,26 @@ const translations = {
       delete: 'Delete',
       deleteArchive: 'Delete from Archive',
       booked: '{n}/{total} registered',
+      errTitle: 'Event title is required.',
+      errTitleShort: 'Event title must be at least 3 characters.',
+      errDate: 'Event date and time is required.',
+      errLoc: 'Event location is required.',
+      errQuota: 'Quota must be at least 1 attendee.',
+      errDesc: 'Event description is required.',
+      errDescShort: 'Please write at least 10 characters for the description.',
+      errorFields: 'Please correct the highlighted fields below before publishing the event.',
+      created: "'{title}' has been published and is now live.",
+      actionFailed: 'The action could not be completed.',
       completedNotice: 'This event has ended and is archived from the public catalog.',
       emptyActiveTitle: 'No Active Events',
-      emptyActiveDesc: 'All events have ended or none have been created yet. Please create a new event.',
+      emptyActiveDesc:
+        'All events have ended or none have been created yet. Please create a new event.',
       emptyActiveBtn: 'Create Event Now',
       emptyCompletedTitle: 'No Completed Events',
       emptyCompletedDesc: 'Events marked as completed will be archived here permanently.',
       formTitle: 'Create New Event Form',
-      formSubtitle: 'Information entered here will be instantly published to the Gatherly public catalog.',
+      formSubtitle:
+        'Information entered here will be instantly published to the Gatherly public catalog.',
       fieldTitle: 'Event Title',
       fieldTitlePh: 'e.g. Modern UI/UX Masterclass',
       fieldCategory: 'Event Category',
@@ -81,32 +92,38 @@ const translations = {
       publish: 'Publish Event Now',
       errorRequired: 'Please fill in all required fields before publishing the event!',
       errorQuota: 'Attendee quota must be at least 1.',
-      success: 'Event published successfully and is now live!',
       modalCompleteTitle: 'Complete Event?',
-      modalCompleteMsg: "Are you sure you want to mark '{title}' as completed? Once completed, the status is final and the event will be automatically removed from public listings.",
+      modalCompleteMsg:
+        "Are you sure you want to mark '{title}' as completed? Once completed, the status is final and the event will be automatically removed from public listings.",
       modalCompleteBtn: 'Yes, Complete',
       modalDeleteTitle: 'Delete Event Permanently?',
-      modalDeleteMsg: "Are you sure you want to permanently delete '{title}'? This action cannot be undone and will permanently remove this event from all records.",
-      modalDeleteBtn: 'Yes, Delete Permanently'
+      modalDeleteMsg:
+        "Are you sure you want to permanently delete '{title}'? This action cannot be undone and will permanently remove this event from all records.",
+      modalDeleteBtn: 'Yes, Delete Permanently',
     },
     home: {
       title: 'Connect, Discover, and Experience',
-      subtitle: 'A community event platform designed to bring ideas together. Discover hundreds of events near you.',
+      subtitle:
+        'A community event platform designed to bring ideas together. Discover hundreds of events near you.',
       discoverBtn: 'Discover Events',
       featuresTitle: 'Why Choose Gatherly?',
       featuresDesc: 'Everything you need to host or attend unforgettable events.',
       discoverTitle: 'Discover Easily',
-      discoverDesc: 'Find events tailored to your interests using our smart category and location filters.',
+      discoverDesc:
+        'Find events tailored to your interests using our smart category and location filters.',
       ticketingTitle: 'Seamless Ticketing',
-      ticketingDesc: 'Register with one click and get your digital QR ticket instantly on your device.',
+      ticketingDesc:
+        'Register with one click and get your digital QR ticket instantly on your device.',
       hostTitle: 'Host Like a Pro',
-      hostDesc: 'Manage attendees, track revenue, and scan QR codes with our comprehensive dashboard.',
+      hostDesc:
+        'Manage attendees, track revenue, and scan QR codes with our comprehensive dashboard.',
       sitemapTitle: 'Website Structure / Site-Map',
-      sitemapDesc: 'A quick overview of how this application is structured via Vue Router.'
+      sitemapDesc: 'A quick overview of how this application is structured via Vue Router.',
     },
     contact: {
       title: 'Contact Us',
-      subtitle: "We'd love to hear from you. Please fill out the form below or reach out via our contact info.",
+      subtitle:
+        "We'd love to hear from you. Please fill out the form below or reach out via our contact info.",
       office: 'Our Office',
       phone: 'Phone',
       email: 'Email',
@@ -116,7 +133,7 @@ const translations = {
       emailPlaceholder: 'john@example.com',
       messageLabel: 'Message',
       messagePlaceholder: 'How can we help you?',
-      sendBtn: 'Send Message'
+      sendBtn: 'Send Message',
     },
     events: {
       title: 'Upcoming Events',
@@ -128,27 +145,31 @@ const translations = {
       resetFilter: 'Reset Filters',
       registeredBadge: 'Registered',
       emptyTitle: 'No Events Available Yet',
-      emptyDesc: 'There are currently no active events scheduled. Are you an organizer? Publish and manage your first event today through the Dashboard!',
+      emptyDesc:
+        'There are currently no active events scheduled. Are you an organizer? Publish and manage your first event today through the Dashboard!',
       emptyBtn: 'Go to Organizer Dashboard',
       categories: {
         workshop: 'Workshop',
         meetup: 'Meetup',
         competition: 'Competition',
         seminar: 'Seminar',
-        conference: 'Conference'
-      }
+        conference: 'Conference',
+        other: 'Other',
+      },
     },
     about: {
       title: 'About Gatherly',
       subtitle: 'Building the future of event experiences, one community at a time.',
       missionTitle: 'Our Mission',
-      missionDesc: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
+      missionDesc:
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
       visionTitle: 'Our Vision',
-      visionDesc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta.'
+      visionDesc:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta.',
     },
     browse: {
       title: 'Browse & Discover',
-      subtitle: 'Find the events and categories that matter most to you.'
+      subtitle: 'Find the events and categories that matter most to you.',
     },
     category: {
       title: 'Explore by Category',
@@ -159,8 +180,8 @@ const translations = {
         art: 'Art & Design',
         business: 'Business',
         health: 'Health & Wellness',
-        food: 'Food & Drink'
-      }
+        food: 'Food & Drink',
+      },
     },
     register: {
       back: 'Back to Event Detail',
@@ -179,7 +200,8 @@ const translations = {
       phonePh: 'e.g. 081234567890',
       dob: 'Date of Birth',
       reason: 'Reason for Attending',
-      reasonPh: 'Describe your background, interests, or what you hope to achieve by joining this event...',
+      reasonPh:
+        'Describe your background, interests, or what you hope to achieve by joining this event...',
       reasonCount: '{n}/10 characters minimum',
       cancel: 'Cancel',
       submit: 'Submit Registration',
@@ -188,7 +210,7 @@ const translations = {
       errEmail: 'Email address is required.',
       errEmailFormat: 'Please enter a valid email address (e.g. name@example.com).',
       errPhone: 'Phone number is required.',
-      errPhoneFormat: 'Please enter a valid phone number (9–15 digits).',
+      errPhoneFormat: 'Please enter a valid phone number (9-15 digits).',
       errDob: 'Date of birth is required.',
       errDobFuture: 'Date of birth cannot be in the future.',
       errDobOld: 'Please enter a realistic date of birth.',
@@ -197,7 +219,8 @@ const translations = {
       errorBanner: 'Please correct the highlighted fields below before submitting.',
       errorFailed: 'Unable to complete registration. Please check the remaining seats.',
       discardTitle: 'Discard Registration?',
-      discardMsg: 'You have unsaved changes in this form. Are you sure you want to cancel and leave this page?',
+      discardMsg:
+        'You have unsaved changes in this form. Are you sure you want to cancel and leave this page?',
       discardBadge: 'Warning',
       discardKeep: 'Keep Editing',
       discardYes: 'Yes, Discard',
@@ -210,7 +233,6 @@ const translations = {
       venue: 'Venue / Location',
       toCatalog: 'Back to Event Catalog',
       toYourEvents: 'Go to Your Events',
-      noticeBadge: 'Notice',
       alreadyTitle: 'Already Registered',
       alreadyDesc: 'You have already secured a confirmed ticket for this event.',
       closedBadge: 'Concluded',
@@ -222,14 +244,16 @@ const translations = {
       soldOutDesc: 'All available seats for this event have been filled.',
       notFoundBadge: 'Not Found',
       notFoundTitle: 'Event Not Found',
-      notFoundDesc: 'The event you are trying to register for is not available or has been deleted.'
+      notFoundDesc:
+        'The event you are trying to register for is not available or has been deleted.',
     },
     yourEvents: {
       title: 'Your Events',
       desc: 'Review your confirmed event registrations and view official digital passes.',
       emptyBadge: 'No Registrations',
       emptyTitle: 'No Registered Events Yet',
-      emptyDesc: 'You have not signed up for any active events. Explore our catalog to find workshops, meetups, and conferences that match your interests.',
+      emptyDesc:
+        'You have not signed up for any active events. Explore our catalog to find workshops, meetups, and conferences that match your interests.',
       emptyBtn: 'Explore Events Catalog',
       upcoming: 'Upcoming',
       concluded: 'Concluded',
@@ -240,9 +264,10 @@ const translations = {
       cancel: 'Cancel',
       archived: 'Archived',
       cancelTitle: 'Cancel Registration?',
-      cancelMsg: "Are you sure you want to cancel your registration for '{title}'? Your reserved seat will be released for other attendees.",
+      cancelMsg:
+        "Are you sure you want to cancel your registration for '{title}'? Your reserved seat will be released for other attendees.",
       cancelKeep: 'Keep Ticket',
-      cancelYes: 'Yes, Cancel Registration'
+      cancelYes: 'Yes, Cancel Registration',
     },
     ticket: {
       back: 'Back to Your Events',
@@ -265,12 +290,29 @@ const translations = {
       concludedNotice: 'This event has concluded. Attendance record is archived.',
       notFoundBadge: 'Not Found',
       notFoundTitle: 'Ticket Not Found',
-      notFoundDesc: 'You do not have an active registration for this event, or it has been cancelled.',
-      notFoundBtn: 'View Your Events List'
+      notFoundDesc:
+        'You do not have an active registration for this event, or it has been cancelled.',
+      notFoundBtn: 'View Your Events List',
+    },
+    api: {
+      notConfigured:
+        'The REST API address is not configured yet. Put your MockAPI URL in the .env file (VITE_API_URL) and restart the dev server.',
+      network: 'Could not reach the server. Please check your internet connection and try again.',
+      timeout: 'The server took too long to respond. Please try again.',
+      notFound: 'The data you requested was not found on the server.',
+      http: 'The server returned an error (HTTP {status}). Please try again in a moment.',
+    },
+    states: {
+      errorBadge: 'Network Error',
+      errorTitle: 'Failed to Load Events',
+      ticketsErrorTitle: 'Failed to Load Your Tickets',
+      dashboardErrorTitle: 'Failed to Load Dashboard Data',
+      retry: 'Try Again',
+      refresh: 'Refresh',
+      loading: 'Loading data from the server...',
     },
     eventDetail: {
       back: 'Back to Events',
-      quota: 'Quota: {n} Attendees',
       seatsLeft: '{n} of {total} seats left',
       statusLive: 'Open Registration',
       statusEnded: 'Event Finished',
@@ -290,9 +332,10 @@ const translations = {
       closedBtn: 'Registration Closed',
       spots: '{n} seats available',
       notFoundTitle: '404 - Event Not Found',
-      notFoundDesc: 'The event you are looking for is unavailable or has been removed by the organizer.',
-      notFoundBtn: 'Back to Event Catalog'
-    }
+      notFoundDesc:
+        'The event you are looking for is unavailable or has been removed by the organizer.',
+      notFoundBtn: 'Back to Event Catalog',
+    },
   },
   ID: {
     nav: {
@@ -304,10 +347,9 @@ const translations = {
       category: 'Kategori',
       contact: 'Kontak',
       dashboard: 'Dashboard Organizer',
-      eventManagement: 'Kelola Acara',
       yourEvents: 'Acara Saya',
       registerEvent: 'Daftar Acara',
-      ticketReceipt: 'Bukti Tiket'
+      ticketReceipt: 'Bukti Tiket',
     },
     dashboard: {
       brand: 'Gatherly Organizer',
@@ -337,11 +379,12 @@ const translations = {
       statusActive: 'Aktif',
       statusCompleted: 'Selesai',
       tableEmpty: 'Belum ada acara yang tercatat di sistem.',
-      createFirst: 'Buat Acara Pertama'
+      createFirst: 'Buat Acara Pertama',
     },
     manage: {
       heading: 'Pusat Kelola Acara',
-      subtitle: 'Kelola siklus hidup acara, terbitkan acara baru, dan arsipkan acara yang sudah selesai.',
+      subtitle:
+        'Kelola siklus hidup acara, terbitkan acara baru, dan arsipkan acara yang sudah selesai.',
       createNew: 'Buat Acara Baru',
       tabActive: 'Acara Aktif ({n})',
       tabCreate: 'Buat Acara',
@@ -351,9 +394,20 @@ const translations = {
       delete: 'Hapus',
       deleteArchive: 'Hapus dari Arsip',
       booked: '{n}/{total} terdaftar',
+      errTitle: 'Judul acara wajib diisi.',
+      errTitleShort: 'Judul acara minimal 3 karakter.',
+      errDate: 'Tanggal dan waktu acara wajib diisi.',
+      errLoc: 'Lokasi acara wajib diisi.',
+      errQuota: 'Kuota minimal 1 peserta.',
+      errDesc: 'Deskripsi acara wajib diisi.',
+      errDescShort: 'Tulis deskripsi minimal 10 karakter.',
+      errorFields: 'Perbaiki kolom yang ditandai di bawah sebelum menerbitkan acara.',
+      created: "'{title}' sudah terbit dan tampil di katalog.",
+      actionFailed: 'Tindakan tidak dapat diselesaikan.',
       completedNotice: 'Acara ini sudah berakhir dan diarsipkan dari katalog publik.',
       emptyActiveTitle: 'Belum Ada Acara Aktif',
-      emptyActiveDesc: 'Semua acara sudah berakhir atau belum ada yang dibuat. Silakan buat acara baru.',
+      emptyActiveDesc:
+        'Semua acara sudah berakhir atau belum ada yang dibuat. Silakan buat acara baru.',
       emptyActiveBtn: 'Buat Acara Sekarang',
       emptyCompletedTitle: 'Belum Ada Acara Selesai',
       emptyCompletedDesc: 'Acara yang ditandai selesai akan diarsipkan di sini secara permanen.',
@@ -372,32 +426,39 @@ const translations = {
       publish: 'Terbitkan Acara',
       errorRequired: 'Lengkapi semua kolom wajib sebelum menerbitkan acara!',
       errorQuota: 'Kuota peserta minimal 1.',
-      success: 'Acara berhasil diterbitkan dan sudah tampil!',
       modalCompleteTitle: 'Selesaikan Acara?',
-      modalCompleteMsg: "Yakin ingin menandai '{title}' sebagai selesai? Status ini permanen dan acara akan otomatis hilang dari katalog publik.",
+      modalCompleteMsg:
+        "Yakin ingin menandai '{title}' sebagai selesai? Status ini permanen dan acara akan otomatis hilang dari katalog publik.",
       modalCompleteBtn: 'Ya, Selesaikan',
       modalDeleteTitle: 'Hapus Acara Permanen?',
-      modalDeleteMsg: "Yakin ingin menghapus '{title}' secara permanen? Tindakan ini tidak bisa dibatalkan dan acara akan hilang dari semua catatan.",
-      modalDeleteBtn: 'Ya, Hapus Permanen'
+      modalDeleteMsg:
+        "Yakin ingin menghapus '{title}' secara permanen? Tindakan ini tidak bisa dibatalkan dan acara akan hilang dari semua catatan.",
+      modalDeleteBtn: 'Ya, Hapus Permanen',
     },
     home: {
       title: 'Hubungkan, Temukan, dan Nikmati',
-      subtitle: 'Platform acara komunitas yang dirancang untuk mempertemukan ide. Temukan ratusan acara di dekat Anda.',
+      subtitle:
+        'Platform acara komunitas yang dirancang untuk mempertemukan ide. Temukan ratusan acara di dekat Anda.',
       discoverBtn: 'Temukan Acara',
       featuresTitle: 'Mengapa Memilih Gatherly?',
-      featuresDesc: 'Semua yang Anda butuhkan untuk mengadakan atau menghadiri acara tak terlupakan.',
+      featuresDesc:
+        'Semua yang Anda butuhkan untuk mengadakan atau menghadiri acara tak terlupakan.',
       discoverTitle: 'Temukan dengan Mudah',
-      discoverDesc: 'Temukan acara yang sesuai minat Anda dengan filter kategori dan lokasi yang cerdas.',
+      discoverDesc:
+        'Temukan acara yang sesuai minat Anda dengan filter kategori dan lokasi yang cerdas.',
       ticketingTitle: 'Tiket Tanpa Ribet',
-      ticketingDesc: 'Daftar dengan satu klik dan dapatkan tiket QR digital langsung di perangkat Anda.',
+      ticketingDesc:
+        'Daftar dengan satu klik dan dapatkan tiket QR digital langsung di perangkat Anda.',
       hostTitle: 'Kelola Seperti Profesional',
-      hostDesc: 'Kelola peserta, pantau pendapatan, dan pindai kode QR lewat dashboard yang lengkap.',
+      hostDesc:
+        'Kelola peserta, pantau pendapatan, dan pindai kode QR lewat dashboard yang lengkap.',
       sitemapTitle: 'Struktur Situs web / Peta Situs',
-      sitemapDesc: 'Gambaran singkat tentang bagaimana aplikasi ini disusun melalui Vue Router.'
+      sitemapDesc: 'Gambaran singkat tentang bagaimana aplikasi ini disusun melalui Vue Router.',
     },
     contact: {
       title: 'Hubungi Kami',
-      subtitle: 'Kami ingin mendengar dari Anda. Silakan isi formulir di bawah ini atau hubungi info kontak kami.',
+      subtitle:
+        'Kami ingin mendengar dari Anda. Silakan isi formulir di bawah ini atau hubungi info kontak kami.',
       office: 'Kantor Kami',
       phone: 'Telepon',
       email: 'Surel',
@@ -407,7 +468,7 @@ const translations = {
       emailPlaceholder: 'john@contoh.com',
       messageLabel: 'Pesan',
       messagePlaceholder: 'Apa yang bisa kami bantu?',
-      sendBtn: 'Kirim Pesan'
+      sendBtn: 'Kirim Pesan',
     },
     events: {
       title: 'Acara Mendatang',
@@ -419,27 +480,31 @@ const translations = {
       resetFilter: 'Reset Filter',
       registeredBadge: 'Terdaftar',
       emptyTitle: 'Belum Ada Acara',
-      emptyDesc: 'Saat ini belum ada acara aktif yang dijadwalkan. Anda penyelenggara? Terbitkan dan kelola acara pertama Anda lewat Dashboard!',
+      emptyDesc:
+        'Saat ini belum ada acara aktif yang dijadwalkan. Anda penyelenggara? Terbitkan dan kelola acara pertama Anda lewat Dashboard!',
       emptyBtn: 'Buka Dashboard Organizer',
       categories: {
         workshop: 'Workshop',
         meetup: 'Meetup',
         competition: 'Kompetisi',
         seminar: 'Seminar',
-        conference: 'Konferensi'
-      }
+        conference: 'Konferensi',
+        other: 'Lainnya',
+      },
     },
     about: {
       title: 'Tentang Gatherly',
       subtitle: 'Membangun masa depan pengalaman acara, satu komunitas pada satu waktu.',
       missionTitle: 'Misi Kami',
-      missionDesc: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
+      missionDesc:
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
       visionTitle: 'Visi Kami',
-      visionDesc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta.'
+      visionDesc:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta.',
     },
     browse: {
       title: 'Jelajahi & Temukan',
-      subtitle: 'Temukan acara dan kategori yang paling berarti bagi Anda.'
+      subtitle: 'Temukan acara dan kategori yang paling berarti bagi Anda.',
     },
     category: {
       title: 'Jelajahi Berdasarkan Kategori',
@@ -450,8 +515,8 @@ const translations = {
         art: 'Seni & Desain',
         business: 'Bisnis',
         health: 'Kesehatan & Kebugaran',
-        food: 'Makanan & Minuman'
-      }
+        food: 'Makanan & Minuman',
+      },
     },
     register: {
       back: 'Kembali ke Detail Acara',
@@ -470,7 +535,8 @@ const translations = {
       phonePh: 'mis. 081234567890',
       dob: 'Tanggal Lahir',
       reason: 'Alasan Mengikuti',
-      reasonPh: 'Ceritakan latar belakang, minat, atau apa yang ingin Anda dapatkan dari acara ini...',
+      reasonPh:
+        'Ceritakan latar belakang, minat, atau apa yang ingin Anda dapatkan dari acara ini...',
       reasonCount: '{n}/10 karakter minimal',
       cancel: 'Batal',
       submit: 'Kirim Pendaftaran',
@@ -479,7 +545,7 @@ const translations = {
       errEmail: 'Alamat email wajib diisi.',
       errEmailFormat: 'Masukkan alamat email yang valid (mis. nama@contoh.com).',
       errPhone: 'Nomor telepon wajib diisi.',
-      errPhoneFormat: 'Masukkan nomor telepon yang valid (9–15 digit).',
+      errPhoneFormat: 'Masukkan nomor telepon yang valid (9-15 digit).',
       errDob: 'Tanggal lahir wajib diisi.',
       errDobFuture: 'Tanggal lahir tidak boleh di masa depan.',
       errDobOld: 'Masukkan tanggal lahir yang masuk akal.',
@@ -488,7 +554,8 @@ const translations = {
       errorBanner: 'Perbaiki kolom yang ditandai di bawah sebelum mengirim.',
       errorFailed: 'Pendaftaran tidak dapat diproses. Periksa sisa kursi acara.',
       discardTitle: 'Batalkan Pendaftaran?',
-      discardMsg: 'Ada isian yang belum dikirim di formulir ini. Yakin ingin membatalkan dan meninggalkan halaman?',
+      discardMsg:
+        'Ada isian yang belum dikirim di formulir ini. Yakin ingin membatalkan dan meninggalkan halaman?',
       discardBadge: 'Peringatan',
       discardKeep: 'Lanjut Mengisi',
       discardYes: 'Ya, Buang',
@@ -501,7 +568,6 @@ const translations = {
       venue: 'Tempat / Lokasi',
       toCatalog: 'Kembali ke Katalog',
       toYourEvents: 'Lihat Acara Saya',
-      noticeBadge: 'Info',
       alreadyTitle: 'Sudah Terdaftar',
       alreadyDesc: 'Anda sudah memiliki tiket terkonfirmasi untuk acara ini.',
       closedBadge: 'Selesai',
@@ -513,14 +579,15 @@ const translations = {
       soldOutDesc: 'Semua kursi untuk acara ini sudah terisi.',
       notFoundBadge: 'Tidak Ditemukan',
       notFoundTitle: 'Acara Tidak Ditemukan',
-      notFoundDesc: 'Acara yang ingin Anda ikuti tidak tersedia atau sudah dihapus.'
+      notFoundDesc: 'Acara yang ingin Anda ikuti tidak tersedia atau sudah dihapus.',
     },
     yourEvents: {
       title: 'Acara Saya',
       desc: 'Tinjau pendaftaran acara Anda yang terkonfirmasi dan lihat tiket digital resmi.',
       emptyBadge: 'Belum Ada Pendaftaran',
       emptyTitle: 'Belum Ada Acara yang Diikuti',
-      emptyDesc: 'Anda belum mendaftar ke acara aktif mana pun. Jelajahi katalog untuk menemukan workshop, meetup, dan konferensi yang sesuai minat Anda.',
+      emptyDesc:
+        'Anda belum mendaftar ke acara aktif mana pun. Jelajahi katalog untuk menemukan workshop, meetup, dan konferensi yang sesuai minat Anda.',
       emptyBtn: 'Jelajahi Katalog Acara',
       upcoming: 'Akan Datang',
       concluded: 'Selesai',
@@ -531,9 +598,10 @@ const translations = {
       cancel: 'Batalkan',
       archived: 'Diarsipkan',
       cancelTitle: 'Batalkan Pendaftaran?',
-      cancelMsg: "Yakin ingin membatalkan pendaftaran Anda untuk '{title}'? Kursi Anda akan dibuka kembali untuk peserta lain.",
+      cancelMsg:
+        "Yakin ingin membatalkan pendaftaran Anda untuk '{title}'? Kursi Anda akan dibuka kembali untuk peserta lain.",
       cancelKeep: 'Simpan Tiket',
-      cancelYes: 'Ya, Batalkan Pendaftaran'
+      cancelYes: 'Ya, Batalkan Pendaftaran',
     },
     ticket: {
       back: 'Kembali ke Acara Saya',
@@ -556,12 +624,29 @@ const translations = {
       concludedNotice: 'Acara ini sudah berakhir. Catatan kehadiran diarsipkan.',
       notFoundBadge: 'Tidak Ditemukan',
       notFoundTitle: 'Tiket Tidak Ditemukan',
-      notFoundDesc: 'Anda tidak memiliki pendaftaran aktif untuk acara ini, atau pendaftarannya sudah dibatalkan.',
-      notFoundBtn: 'Lihat Daftar Acara Saya'
+      notFoundDesc:
+        'Anda tidak memiliki pendaftaran aktif untuk acara ini, atau pendaftarannya sudah dibatalkan.',
+      notFoundBtn: 'Lihat Daftar Acara Saya',
+    },
+    api: {
+      notConfigured:
+        'Alamat REST API belum dikonfigurasi. Masukkan URL MockAPI Anda di file .env (VITE_API_URL) lalu jalankan ulang dev server.',
+      network: 'Tidak bisa terhubung ke server. Periksa koneksi internet Anda lalu coba lagi.',
+      timeout: 'Server terlalu lama merespons. Silakan coba lagi.',
+      notFound: 'Data yang diminta tidak ditemukan di server.',
+      http: 'Server mengembalikan error (HTTP {status}). Silakan coba beberapa saat lagi.',
+    },
+    states: {
+      errorBadge: 'Gangguan Jaringan',
+      errorTitle: 'Gagal Memuat Data Acara',
+      ticketsErrorTitle: 'Gagal Memuat Tiket Anda',
+      dashboardErrorTitle: 'Gagal Memuat Data Dashboard',
+      retry: 'Coba Lagi',
+      refresh: 'Muat Ulang',
+      loading: 'Memuat data dari server...',
     },
     eventDetail: {
       back: 'Kembali ke Acara',
-      quota: 'Kuota: {n} Peserta',
       seatsLeft: 'Sisa {n} dari {total} kursi',
       statusLive: 'Pendaftaran Dibuka',
       statusEnded: 'Acara Selesai',
@@ -582,9 +667,9 @@ const translations = {
       spots: 'Tersedia {n} kursi',
       notFoundTitle: '404 - Acara Tidak Ditemukan',
       notFoundDesc: 'Acara yang Anda cari tidak tersedia atau sudah dihapus oleh penyelenggara.',
-      notFoundBtn: 'Kembali ke Katalog Acara'
-    }
-  }
+      notFoundBtn: 'Kembali ke Katalog Acara',
+    },
+  },
 }
 
 const dateLocales = { EN: 'en-US', ID: 'id-ID' }
@@ -606,10 +691,9 @@ export function useLanguage() {
       day: '2-digit',
       month,
       year: 'numeric',
-      timeZone: 'UTC'
+      timeZone: 'UTC',
     }).format(new Date(iso))
 
-  // datetime-local "2026-10-15T10:00" -> "Oct 15, 2026 • 10:00 AM"
   const formatDateTime = (value) => {
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return value
@@ -617,7 +701,7 @@ export function useLanguage() {
     const datePart = date.toLocaleDateString(dateLocales[locale.value], opts)
     const timePart = date.toLocaleTimeString(dateLocales[locale.value], {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
     return `${datePart} • ${timePart}`
   }
@@ -631,6 +715,6 @@ export function useLanguage() {
     t,
     formatDate,
     formatDateTime,
-    toggleLocale
+    toggleLocale,
   }
 }

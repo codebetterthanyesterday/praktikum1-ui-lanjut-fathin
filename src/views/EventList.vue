@@ -1,17 +1,25 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { CalendarSearch, SearchX } from 'lucide-vue-next'
+import { CalendarSearch, SearchX, RefreshCw } from 'lucide-vue-next'
 import EventCard from '@/components/event/EventCard.vue'
 import SearchBar from '@/components/event/SearchBar.vue'
 import CategoryFilter from '@/components/event/CategoryFilter.vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import SkeletonCard from '@/components/ui/SkeletonCard.vue'
+import ErrorState from '@/components/ui/ErrorState.vue'
 import { useEvents, categories as categoryKeys } from '@/composables/useEvents'
 import { useLanguage } from '@/composables/useLanguage'
 
 const router = useRouter()
 const { t } = useLanguage()
-const { activeEvents, isUserRegistered } = useEvents()
+const { activeEvents, isUserRegistered, loading, loaded, error, fetchEvents } = useEvents()
+
+const showSkeleton = computed(
+  () => (loading.value || (!loaded.value && !error.value)) && activeEvents.value.length === 0,
+)
+
+onMounted(fetchEvents)
 
 const searchQuery = ref('')
 const selectedCategory = ref('all')
@@ -44,11 +52,35 @@ const handleViewDetail = (id) => {
 <template>
   <div class="event-list-page">
     <div class="header-section">
-      <h2 class="section-title">{{ t('events.title') }}</h2>
+      <div class="header-top">
+        <h2 class="section-title">{{ t('events.title') }}</h2>
+        <button
+          type="button"
+          class="btn-refresh"
+          :disabled="loading"
+          :aria-busy="loading || undefined"
+          @click="fetchEvents"
+        >
+          <RefreshCw :size="16" :class="{ spinning: loading }" />
+          <span>{{ t('states.refresh') }}</span>
+        </button>
+      </div>
       <p class="section-desc">{{ t('events.desc') }}</p>
     </div>
 
-    <div v-if="activeEvents.length === 0" class="empty-state friendly">
+    <div v-if="showSkeleton" class="event-grid" role="status" :aria-label="t('states.loading')">
+      <SkeletonCard v-for="n in 6" :key="n" />
+    </div>
+
+    <ErrorState
+      v-else-if="error"
+      :title="t('states.errorTitle')"
+      :error="error"
+      :retrying="loading"
+      @retry="fetchEvents"
+    />
+
+    <div v-else-if="activeEvents.length === 0" class="empty-state friendly">
       <CalendarSearch :size="56" :stroke-width="1.5" class="empty-icon" />
       <h3>{{ t('events.emptyTitle') }}</h3>
       <p>{{ t('events.emptyDesc') }}</p>
@@ -85,10 +117,52 @@ const handleViewDetail = (id) => {
   margin-bottom: var(--space-6);
 }
 
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.btn-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 50px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.btn-refresh:hover:not(:disabled) {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.btn-refresh:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+.btn-refresh:focus-visible {
+  outline: 3px solid var(--primary-soft);
+  outline-offset: 2px;
+}
+
+.spinning {
+  animation: spin 0.8s infinite linear;
+}
+
 .section-title {
   font-size: clamp(1.6rem, 5vw, 2.2rem);
   color: var(--text-main);
-  margin-bottom: var(--space-2);
 }
 
 .section-desc {
@@ -100,7 +174,6 @@ const handleViewDetail = (id) => {
   margin-bottom: var(--space-6);
 }
 
-/* min() biar kartu ga overflow di hp kecil */
 .event-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));

@@ -15,6 +15,14 @@ defineProps({
     type: String,
     default: 'button',
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
 })
 defineEmits(['click'])
 </script>
@@ -24,9 +32,12 @@ defineEmits(['click'])
     :is="to ? RouterLink : 'button'"
     :to="to || undefined"
     :type="to ? undefined : type"
-    :class="['app-button', `btn-${variant}`]"
+    :class="['app-button', `btn-${variant}`, { 'btn-loading': loading }]"
+    :disabled="to ? undefined : disabled || loading"
+    :aria-busy="loading || undefined"
     @click="$emit('click', $event)"
   >
+    <span v-if="loading" class="btn-spinner" aria-hidden="true"></span>
     <slot />
   </component>
 </template>
@@ -35,7 +46,7 @@ defineEmits(['click'])
 .app-button {
   font-size: 1.1rem;
   font-weight: 600;
-  line-height: 1.5; /* biar tinggi <a> sama <button> sama */
+  line-height: 1.5;
   text-decoration: none;
   padding: var(--space-3) var(--space-8);
   border-radius: 12px;
@@ -49,9 +60,19 @@ defineEmits(['click'])
 }
 
 @media (hover: hover) {
-  .app-button:hover {
+  .app-button:hover:not(:disabled) {
     transform: translateY(-2px);
   }
+}
+
+.app-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-loading:disabled {
+  opacity: 0.85;
+  cursor: wait;
 }
 
 .app-button:focus-visible {
@@ -64,7 +85,7 @@ defineEmits(['click'])
   color: white;
   box-shadow: 0 8px 20px rgba(102, 68, 255, 0.3);
 }
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   background-color: var(--primary-hover);
 }
 
@@ -72,7 +93,7 @@ defineEmits(['click'])
   background-color: #f0f0f0;
   color: var(--text-main);
 }
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
   background-color: #e0e0e0;
 }
 
@@ -81,7 +102,7 @@ defineEmits(['click'])
   color: var(--primary);
   border: 1px solid var(--primary);
 }
-.btn-outline:hover {
+.btn-outline:hover:not(:disabled) {
   background-color: var(--primary-soft);
 }
 </style>
